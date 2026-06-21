@@ -74,13 +74,15 @@ function renderDayPanel() {
           <div class="ev-top">
             <span class="ev-owner" style="background:${OWNER_COLOR[e.owner]}">${e.owner}</span>
             <span class="ev-time">${evTimeText(e)}</span>
-            <button class="rdel" data-id="${e.id}" title="삭제">✕</button>
+            <span class="ev-tools">
+              <button class="ev-edit" data-id="${e.id}" title="수정">✏️</button>
+              <button class="rdel" data-id="${e.id}" title="삭제">✕</button>
+            </span>
           </div>
           <div class="ev-title">${escapeHtml(e.title)}</div>
           ${e.end_date && e.end_date !== e.event_date
             ? `<div class="ev-range">📅 ${shortK(e.event_date)} ~ ${shortK(e.end_date)} (여행/연속)</div>` : ''}
           ${e.memo ? `<div class="ev-memo">${escapeHtml(e.memo)}</div>` : ''}
-          <div class="ev-actions"><button class="ev-edit" data-id="${e.id}">✏️ 수정</button></div>
         </div>`).join('')}
   `;
 

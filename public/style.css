@@ -386,7 +386,7 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 /* ══ 캘린더 페이지 ═══════════════════════════════════════════ */
-.cal-bar .drawer-btn { font-size: 22px; }
+.cal-topbar .drawer-btn { font-size: 22px; }
 .cal-main { max-width: 520px; margin: 0 auto; padding: 14px 14px 48px; }
 .cal-nav { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0 14px; }
 .cal-arrow { border: none; background: #fff; width: 36px; height: 36px; border-radius: 10px; font-size: 20px; color: #4E5968; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
@@ -418,9 +418,10 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .ev-item .rdel:hover { color: #cf222e; }
 .ev-title { font-size: 14px; font-weight: 600; margin-top: 5px; }
 .ev-memo { font-size: 12px; color: #8B95A1; margin-top: 3px; white-space: pre-wrap; }
-.ev-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
-.ev-edit { border: none; background: #F2F4F6; color: #4E5968; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
-.ev-edit:hover { background: #E5E8EB; }
+.ev-tools { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.ev-tools .rdel { margin-left: 0; }
+.ev-edit { border: none; background: none; color: #b0b8c1; font-size: 13px; cursor: pointer; padding: 0; line-height: 1; }
+.ev-edit:hover { color: #4E5968; }
 
 .owner-pick { display: flex; gap: 8px; }
 .owner-btn { flex: 1; padding: 11px; border: 1px solid #E5E8EB; border-radius: 10px; background: #fff; color: #4E5968; font-weight: 700; font-size: 14px; cursor: pointer; }
