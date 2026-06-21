@@ -21,10 +21,21 @@
       <a class="home-link-btn" href="/map.html">🍜 맛집 지도</a>
       <a class="home-link-btn" href="/wish.html">🎫 소원권 대장</a>
     </nav>
+
+    <section class="home-cal">
+      <div class="home-cal-head">
+        <span>📅 다가오는 일정</span>
+        <a href="/calendar.html">전체보기 ›</a>
+      </div>
+      <div id="homeUpcoming" class="home-cal-list">
+        <div class="hc-empty">불러오는 중…</div>
+      </div>
+    </section>
   </main>
 
   <script>
     const KEY = 'whoami';
+    const OWNER_COLOR = { 민혁: '#3182F6', 하진: '#E64980', 데이트: '#7C5CFC' };
     const btns = document.querySelectorAll('.whoami-btn');
     function paint() {
       const me = localStorage.getItem(KEY) || '';
@@ -33,17 +44,43 @@
     btns.forEach((b) =>
       b.addEventListener('click', () => { localStorage.setItem(KEY, b.dataset.who); paint(); })
     );
-    // 신원 선택 전에는 메뉴 진입 막기
-    document.querySelectorAll('.menu-card').forEach((a) =>
+    // 신원 선택 전에는 지도/소원권 진입 막기
+    document.querySelectorAll('.home-link-btn').forEach((a) =>
       a.addEventListener('click', (e) => {
         if (!localStorage.getItem(KEY)) {
           e.preventDefault();
-          document.querySelector('.whoami-pick').classList.add('shake');
-          setTimeout(() => document.querySelector('.whoami-pick').classList.remove('shake'), 500);
+          const pick = document.querySelector('.whoami-pick');
+          pick.classList.add('shake');
+          setTimeout(() => pick.classList.remove('shake'), 500);
         }
       })
     );
     paint();
+
+    function escapeHtml(s = '') {
+      return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    }
+    async function loadUpcoming() {
+      const box = document.getElementById('homeUpcoming');
+      try {
+        const evs = await fetch('/api/events').then((r) => r.json());
+        const t = new Date();
+        const ts = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+        const up = (Array.isArray(evs) ? evs : []).filter((e) => e.event_date >= ts).slice(0, 3);
+        if (!up.length) { box.innerHTML = '<div class="hc-empty">다가오는 일정이 없어요</div>'; return; }
+        box.innerHTML = up.map((e) => {
+          const [y, m, d] = e.event_date.split('-').map(Number);
+          const wd = ['일', '월', '화', '수', '목', '금', '토'][new Date(y, m - 1, d).getDay()];
+          return `<a class="hc-item" href="/calendar.html">
+            <i class="dot" style="background:${OWNER_COLOR[e.owner]}"></i>
+            <span class="hc-date">${m}.${d}<small>(${wd})</small></span>
+            <span class="hc-title">${escapeHtml(e.title)}</span>
+            <span class="hc-owner" style="color:${OWNER_COLOR[e.owner]}">${e.owner}</span>
+          </a>`;
+        }).join('');
+      } catch (_) { box.innerHTML = '<div class="hc-empty">일정을 불러오지 못했어요</div>'; }
+    }
+    loadUpcoming();
   </script>
 </body>
 </html>

@@ -175,7 +175,7 @@ header h1 { font-size: 18px; margin: 0; }
 body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .home-main {
   display: block; height: auto;
-  max-width: 360px; margin: 0 auto; padding: 90px 24px 40px;
+  max-width: 360px; margin: 0 auto; padding: 56px 24px 40px;
   text-align: center;
 }
 .home-hero { color: #191F28; margin-bottom: 44px; }
@@ -290,7 +290,7 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
 .sheet-close { border: none; background: none; font-size: 18px; cursor: pointer; color: #57606a; }
 .sheet .hint { font-size: 13px; color: #57606a; margin: 4px 0 12px; }
-.sheet textarea, .sheet input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #d0d7de; border-radius: 10px; font-size: 15px; }
+.sheet textarea, .sheet input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #d0d7de; border-radius: 10px; font-size: 16px; }
 .f-label { display: block; font-size: 13px; color: #57606a; margin: 12px 0 6px; }
 .sheet .big-btn { margin-top: 14px; }
 
@@ -366,3 +366,58 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
   /* 리뷰 상세 패널: 모바일 전체폭 */
   .panel { width: 100%; }
 }
+
+/* ══ 홈: 다가오는 일정 미리보기 ═══════════════════════════════ */
+.home-cal {
+  margin-top: 24px; text-align: left;
+  background: #fff; border: 1px solid #E5E8EB; border-radius: 14px;
+  padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.home-cal-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 700; color: #191F28; margin-bottom: 8px; }
+.home-cal-head a { font-size: 12px; color: #8B95A1; text-decoration: none; font-weight: 600; }
+.home-cal-list { display: flex; flex-direction: column; gap: 2px; }
+.hc-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; text-decoration: none; color: #191F28; border-radius: 8px; }
+.hc-item:active { background: #F2F4F6; }
+.hc-date { font-size: 13px; font-weight: 700; color: #4E5968; white-space: nowrap; }
+.hc-date small { font-size: 11px; color: #8B95A1; margin-left: 1px; }
+.hc-title { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hc-owner { font-size: 11px; font-weight: 700; white-space: nowrap; }
+.hc-empty { font-size: 13px; color: #8B95A1; padding: 8px 4px; text-align: center; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ══ 캘린더 페이지 ═══════════════════════════════════════════ */
+.cal-bar .drawer-btn { font-size: 22px; }
+.cal-main { max-width: 520px; margin: 0 auto; padding: 14px 14px 48px; }
+.cal-nav { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0 14px; }
+.cal-arrow { border: none; background: #fff; width: 36px; height: 36px; border-radius: 10px; font-size: 20px; color: #4E5968; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.cal-label { font-size: 18px; font-weight: 800; min-width: 96px; text-align: center; }
+.cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: #8B95A1; padding: 4px 0; }
+.cal-weekdays .sun { color: #E5484D; }
+.cal-weekdays .sat { color: #3182F6; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-cell { min-height: 56px; border-radius: 10px; padding: 5px 2px; background: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+.cal-cell.empty { background: transparent; cursor: default; }
+.cal-num { font-size: 13px; color: #191F28; line-height: 1.4; }
+.cal-num.sun { color: #E5484D; }
+.cal-num.sat { color: #3182F6; }
+.cal-cell.today .cal-num { background: #3182F6; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.cal-cell.selected { outline: 2px solid #3182F6; }
+.cal-dots { display: flex; gap: 2px; margin-top: 4px; flex-wrap: wrap; justify-content: center; }
+
+.cal-legend { display: flex; gap: 16px; justify-content: center; font-size: 12px; color: #4E5968; margin: 16px 0 8px; }
+.cal-legend span { display: flex; align-items: center; gap: 5px; }
+
+.day-panel { margin-top: 8px; }
+.day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 15px; }
+.day-add { border: none; background: #3182F6; color: #fff; font-weight: 700; font-size: 13px; padding: 7px 13px; border-radius: 8px; cursor: pointer; }
+.ev-item { background: #fff; border-left: 4px solid #3182F6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.ev-top { display: flex; align-items: center; gap: 8px; }
+.ev-owner { font-size: 11px; font-weight: 700; color: #fff; padding: 2px 8px; border-radius: 8px; }
+.ev-time { font-size: 12px; color: #8B95A1; }
+.ev-item .rdel { margin-left: auto; border: none; background: none; color: #b0b8c1; font-size: 12px; cursor: pointer; }
+.ev-item .rdel:hover { color: #cf222e; }
+.ev-title { font-size: 14px; font-weight: 600; margin-top: 5px; }
+.ev-memo { font-size: 12px; color: #8B95A1; margin-top: 3px; white-space: pre-wrap; }
+
+.owner-pick { display: flex; gap: 8px; }
+.owner-btn { flex: 1; padding: 11px; border: 1px solid #E5E8EB; border-radius: 10px; background: #fff; color: #4E5968; font-weight: 700; font-size: 14px; cursor: pointer; }
