@@ -28,7 +28,7 @@ header h1 { font-size: 18px; margin: 0; }
 .sidebar h2 { font-size: 14px; margin: 18px 0 8px; }
 
 .search { display: flex; gap: 6px; }
-.search input { flex: 1; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; }
+.search input { flex: 1; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 16px; }
 .search button { padding: 8px 14px; border: none; border-radius: 6px; background: #3182F6; color: #fff; cursor: pointer; }
 
 .results { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -82,7 +82,7 @@ header h1 { font-size: 18px; margin: 0; }
 .review-item .rdel:hover { opacity: 1; }
 
 .form label { display: block; font-size: 13px; margin: 10px 0 4px; }
-.form input, .form textarea { width: 100%; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; }
+.form input, .form textarea { width: 100%; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 16px; }
 .form button { margin-top: 12px; width: 100%; padding: 10px; border: none; border-radius: 6px; background: #3182F6; color: #fff; font-weight: 600; cursor: pointer; }
 
 /* ── 헤더 브랜드 + 홈 링크 ────────────────────────────────── */
