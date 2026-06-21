@@ -1,7 +1,6 @@
 // ── 상태 ───────────────────────────────────────────────────────
 let map;
 let markers = {};            // place.id -> naver.maps.Marker
-let highlightMarker = null;  // 검색/선택 위치를 가리키는 핀
 const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
 const meChip = document.getElementById('meChip');
 if (meChip) meChip.textContent = ME || '이름 선택 →';
@@ -25,21 +24,10 @@ function scoreBand(score) {
   return        { emoji: '⭐', bg: '#1f9d57', fg: '#fff' };            // 8~10 초록
 }
 
-// ── 위치 강조 핀 (검색/선택 시 통통 튀는 마커) ─────────────────
+// ── 위치로 부드럽게 이동 (별도 핀은 띄우지 않음) ───────────────
 function highlight(lat, lng) {
   if (!map || lat == null || lng == null) return;
-  const pos = new naver.maps.LatLng(lat, lng);
-  if (highlightMarker) highlightMarker.setMap(null);
-  highlightMarker = new naver.maps.Marker({
-    position: pos,
-    map,
-    zIndex: 1000,
-    icon: {
-      content: '<div class="pin-drop"><div class="pin"></div><div class="pin-pulse"></div></div>',
-      anchor: new naver.maps.Point(13, 34),
-    },
-  });
-  map.panTo(pos);
+  map.panTo(new naver.maps.LatLng(lat, lng));
 }
 
 // ── 지도 동적 로드 (Client ID는 서버에서 받아옴) ───────────────
@@ -126,8 +114,8 @@ async function loadPlaces() {
       position: new naver.maps.LatLng(p.lat, p.lng),
       map,
       icon: {
-        content: `<div style="background:${b.bg};color:${b.fg};border-radius:14px;padding:3px 9px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.3)">${b.emoji ? b.emoji + ' ' : ''}${scoreText} ${p.name}</div>`,
-        anchor: new naver.maps.Point(20, 14),
+        content: `<div class="map-pin" style="background:${b.bg}">${b.emoji || ''}</div>`,
+        anchor: new naver.maps.Point(17, 17),
       },
     });
     naver.maps.Event.addListener(marker, 'click', () => { highlight(p.lat, p.lng); openPanel(p.id); });
