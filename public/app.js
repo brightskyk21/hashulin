@@ -161,8 +161,14 @@ async function openPanel(placeId) {
     <div class="form">
       <label>방문 날짜</label>
       <input id="dateInput" type="date" value="${todayLocal()}" max="${todayLocal()}" />
-      <label>점수 (1.0 ~ 10.0)</label>
-      <input id="scoreInput" type="number" min="1" max="10" step="0.1" placeholder="예: 8.5" />
+      <label>점수</label>
+      <div class="score-pick">
+        <div id="scoreReadout" class="score-readout">
+          <span id="scoreEmoji">😐</span> <span id="scoreVal">5.0</span>
+        </div>
+        <input id="scoreInput" class="score-range" type="range" min="1" max="10" step="0.1" value="5" />
+        <div class="score-scale"><span>1</span><span>5</span><span>10</span></div>
+      </div>
       <label>평가</label>
       <textarea id="commentInput" rows="3" placeholder="한 줄 평을 남겨주세요"></textarea>
       <button id="addReview">평가 등록</button>
@@ -186,6 +192,19 @@ async function openPanel(placeId) {
   body.querySelectorAll('.rdel').forEach((btn) =>
     btn.addEventListener('click', () => deleteReview(btn.dataset.id, placeId))
   );
+
+  // 스펙트럼 슬라이더: 드래그하면 점수·이모지·색 실시간 갱신
+  const slider = body.querySelector('#scoreInput');
+  const updateScore = () => {
+    const v = Number(slider.value);
+    const b = scoreBand(v);
+    body.querySelector('#scoreVal').textContent = v.toFixed(1);
+    body.querySelector('#scoreEmoji').textContent = b.emoji || '🤔';
+    body.querySelector('#scoreReadout').style.color = b.bg;
+  };
+  slider.addEventListener('input', updateScore);
+  updateScore();
+
   document.getElementById('panel').classList.remove('hidden');
 }
 
