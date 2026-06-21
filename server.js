@@ -254,6 +254,23 @@ app.post('/api/events', async (req, res) => {
   res.json(data);
 });
 
+// ── 일정 수정 ─────────────────────────────────────────────────
+app.put('/api/events/:id', async (req, res) => {
+  const { owner, title, eventDate, endDate, startTime, endTime, memo } = req.body;
+  if (!['민혁', '하진', '데이트'].includes(owner) || !title || !eventDate)
+    return res.status(400).json({ error: 'owner(민혁/하진/데이트), title, eventDate 필요' });
+
+  const row = {
+    owner, title, event_date: eventDate, memo: memo || '',
+    start_time: startTime || null,
+    end_time: endTime || null,
+    end_date: endDate && endDate >= eventDate ? endDate : null,
+  };
+  const { data, error } = await supabase.from('events').update(row).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // ── 일정 삭제 ─────────────────────────────────────────────────
 app.delete('/api/events/:id', async (req, res) => {
   const { error } = await supabase.from('events').delete().eq('id', req.params.id);

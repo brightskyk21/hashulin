@@ -80,6 +80,7 @@ function renderDayPanel() {
           ${e.end_date && e.end_date !== e.event_date
             ? `<div class="ev-range">📅 ${shortK(e.event_date)} ~ ${shortK(e.end_date)} (여행/연속)</div>` : ''}
           ${e.memo ? `<div class="ev-memo">${escapeHtml(e.memo)}</div>` : ''}
+          <div class="ev-actions"><button class="ev-edit" data-id="${e.id}">✏️ 수정</button></div>
         </div>`).join('')}
   `;
 
@@ -87,11 +88,15 @@ function renderDayPanel() {
   panel.querySelectorAll('.rdel').forEach((b) =>
     b.addEventListener('click', () => delEvent(b.dataset.id))
   );
+  panel.querySelectorAll('.ev-edit').forEach((b) =>
+    b.addEventListener('click', () => openEdit(events.find((x) => x.id === b.dataset.id)))
+  );
 }
 
 // ── 추가 모달 ──────────────────────────────────────────────────
 let pickedOwner = localStorage.getItem('whoami') || '민혁';
 let addDate;
+let editingId = null;   // 수정 중인 일정 id (null이면 새로 추가)
 
 function fmtDateK(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -135,7 +140,16 @@ document.getElementById('evAllday').addEventListener('change', (e) => {
   document.getElementById('timeFields').style.display = e.target.checked ? 'none' : 'block';
 });
 
+function setTimeSelects(prefix, t) {       // t: "18:30"
+  const [h, m] = t.split(':').map(Number);
+  document.getElementById(prefix + 'Ampm').value = h < 12 ? 'AM' : 'PM';
+  document.getElementById(prefix + 'Hour').value = String(h % 12 === 0 ? 12 : h % 12);
+  document.getElementById(prefix + 'Min').value = String(m).padStart(2, '0');
+}
+
 function openAdd(dateStr) {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '📅 일정 추가';
   addDate = dateStr || selected || todayStr();
   document.getElementById('evDateDisplay').textContent = fmtDateK(addDate);
   const end = document.getElementById('evEndDate');
@@ -151,6 +165,38 @@ function openAdd(dateStr) {
   document.getElementById('endMin').value = '00';
   document.getElementById('evTitle').value = '';
   document.getElementById('evMemo').value = '';
+  paintOwner();
+  document.getElementById('addModal').classList.remove('hidden');
+}
+
+function openEdit(e) {
+  if (!e) return;
+  editingId = e.id;
+  document.getElementById('modalTitle').textContent = '✏️ 일정 수정';
+  addDate = e.event_date;
+  document.getElementById('evDateDisplay').textContent = fmtDateK(addDate);
+  const end = document.getElementById('evEndDate');
+  end.min = addDate;
+  end.value = e.end_date && e.end_date !== e.event_date ? e.end_date : '';
+  pickedOwner = e.owner;
+
+  if (e.start_time) {
+    document.getElementById('evAllday').checked = false;
+    document.getElementById('timeFields').style.display = 'block';
+    setTimeSelects('start', e.start_time.slice(0, 5));
+    setTimeSelects('end', (e.end_time || e.start_time).slice(0, 5));
+  } else {
+    document.getElementById('evAllday').checked = true;
+    document.getElementById('timeFields').style.display = 'none';
+    document.getElementById('startAmpm').value = 'AM';
+    document.getElementById('startHour').value = '9';
+    document.getElementById('startMin').value = '00';
+    document.getElementById('endAmpm').value = 'PM';
+    document.getElementById('endHour').value = '6';
+    document.getElementById('endMin').value = '00';
+  }
+  document.getElementById('evTitle').value = e.title;
+  document.getElementById('evMemo').value = e.memo || '';
   paintOwner();
   document.getElementById('addModal').classList.remove('hidden');
 }
@@ -189,14 +235,16 @@ document.getElementById('saveEvent').addEventListener('click', async () => {
   }
 
   const endDate = document.getElementById('evEndDate').value;
-  const res = await fetch('/api/events', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+  const res = await fetch(editingId ? `/api/events/${editingId}` : '/api/events', {
+    method: editingId ? 'PUT' : 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ owner: pickedOwner, title, eventDate, endDate, startTime, endTime, memo }),
   });
   if (!res.ok) return toast('저장 실패');
   document.getElementById('addModal').classList.add('hidden');
   selected = eventDate;
-  toast('일정 추가됨 📅');
+  toast(editingId ? '일정 수정됨 ✏️' : '일정 추가됨 📅');
+  editingId = null;
   await load();
 });
 
