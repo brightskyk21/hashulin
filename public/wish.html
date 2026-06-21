@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>소원권 대장</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="wish-body">
+  <header class="app-bar">
+    <div class="brand">
+      <a href="/" class="home-link">←</a>
+      <h1>🎫 소원권 대장</h1>
+    </div>
+    <div class="bar-right">
+      <a href="/" class="me-chip" id="meChip" title="바꾸려면 홈으로">–</a>
+      <button id="drawerBtn" class="drawer-btn" aria-label="컨펌 요청">
+        🗄️
+        <span id="drawerBadge" class="drawer-badge hidden">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="wish-main">
+    <!-- 잔액: 위아래 가로 바 -->
+    <section class="balances-stack" id="balances"></section>
+
+    <!-- 액션 버튼 -->
+    <div class="wish-actions-main">
+      <button id="openRequest" class="big-btn primary">🎫 소원권 신청</button>
+      <button id="openUse" class="big-btn">✨ 소원권 쓰기</button>
+      <a href="/wish-archive.html" class="big-btn link">📒 사용 기록 보기</a>
+    </div>
+  </main>
+
+  <!-- 신청 모달 -->
+  <div id="requestModal" class="modal hidden">
+    <div class="sheet">
+      <div class="sheet-head"><span>🎫 소원권 신청</span><button class="sheet-close" data-close>✕</button></div>
+      <p class="hint">사유를 적고 신청하면, <b>상대방</b>이 컨펌해야 소원권이 늘어나요.</p>
+      <textarea id="reasonInput" rows="3" placeholder="획득 사유 (예: 설거지 일주일 함)"></textarea>
+      <button id="requestBtn" class="big-btn primary">신청하기</button>
+    </div>
+  </div>
+
+  <!-- 사용 모달 -->
+  <div id="useModal" class="modal hidden">
+    <div class="sheet">
+      <div class="sheet-head"><span>✨ 소원권 쓰기</span><button class="sheet-close" data-close>✕</button></div>
+      <p class="hint">보유한 소원권을 사용해요. 사용 기록은 아카이브에 남아요.</p>
+      <label class="f-label">사용 날짜</label>
+      <input id="useDate" type="date" />
+      <label class="f-label">어디에/무엇에 썼나요?</label>
+      <textarea id="useDesc" rows="2" placeholder="예: 영화 보고 싶다고 졸라서"></textarea>
+      <button id="useBtn" class="big-btn primary">사용 기록하기</button>
+    </div>
+  </div>
+
+  <!-- 컨펌 서랍 모달 -->
+  <div id="drawerModal" class="modal hidden">
+    <div class="sheet">
+      <div class="sheet-head"><span>🗄️ 내 컨펌을 기다리는 요청</span><button class="sheet-close" data-close>✕</button></div>
+      <div id="pendingForMe" class="wish-list"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="wish.js"></script>
+</body>
+</html>

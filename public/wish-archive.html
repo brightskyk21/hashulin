@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>소원권 사용 기록</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="wish-body">
+  <header class="app-bar">
+    <div class="brand">
+      <a href="/wish.html" class="home-link">←</a>
+      <h1>📒 사용 기록</h1>
+    </div>
+  </header>
+
+  <main class="wish-main">
+    <!-- 받은/쓴/남은 요약 -->
+    <section class="archive-summary" id="summary"></section>
+
+    <h2>전체 사용 내역</h2>
+    <div id="useList" class="wish-list"></div>
+
+    <h2 style="margin-top:24px">소원권 획득 내역</h2>
+    <div id="earnList" class="wish-list"></div>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="wish-archive.js"></script>
+</body>
+</html>

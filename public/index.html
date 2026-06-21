@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>하슐랭</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="home">
+  <main class="home-main">
+    <div class="home-hero">
+      <h1 class="home-title">🌟 Hashulin Guide 🌟</h1>
+    </div>
+
+    <div class="whoami-pick">
+      <button class="whoami-btn" data-who="하진">🐱 하진</button>
+      <button class="whoami-btn" data-who="민혁">🍙 민혁</button>
+    </div>
+
+    <nav class="home-menu">
+      <a class="home-link-btn" href="/map.html">🍜 맛집 지도</a>
+      <a class="home-link-btn" href="/wish.html">🎫 소원권 대장</a>
+    </nav>
+  </main>
+
+  <script>
+    const KEY = 'whoami';
+    const btns = document.querySelectorAll('.whoami-btn');
+    function paint() {
+      const me = localStorage.getItem(KEY) || '';
+      btns.forEach((b) => b.classList.toggle('on', b.dataset.who === me));
+    }
+    btns.forEach((b) =>
+      b.addEventListener('click', () => { localStorage.setItem(KEY, b.dataset.who); paint(); })
+    );
+    // 신원 선택 전에는 메뉴 진입 막기
+    document.querySelectorAll('.menu-card').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        if (!localStorage.getItem(KEY)) {
+          e.preventDefault();
+          document.querySelector('.whoami-pick').classList.add('shake');
+          setTimeout(() => document.querySelector('.whoami-pick').classList.remove('shake'), 500);
+        }
+      })
+    );
+    paint();
+  </script>
+</body>
+</html>

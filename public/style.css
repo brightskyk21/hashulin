@@ -1,0 +1,275 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color: #1f2328;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #3182F6; /* 네이버 그린 */
+  color: #fff;
+}
+header h1 { font-size: 18px; margin: 0; }
+.me { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.me input { padding: 6px 8px; border: none; border-radius: 6px; }
+
+.map-layout { display: flex; height: calc(100vh - 56px); }
+
+.sidebar {
+  width: 340px;
+  border-right: 1px solid #e5e7eb;
+  padding: 14px;
+  overflow-y: auto;
+}
+.sidebar h2 { font-size: 14px; margin: 18px 0 8px; }
+
+.search { display: flex; gap: 6px; }
+.search input { flex: 1; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; }
+.search button { padding: 8px 14px; border: none; border-radius: 6px; background: #3182F6; color: #fff; cursor: pointer; }
+
+.results { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.card:hover { background: #f6f8fa; }
+.card .name { font-weight: 600; font-size: 14px; }
+.card .cat { font-size: 12px; color: #57606a; }
+.card .addr { font-size: 12px; color: #57606a; margin-top: 2px; }
+.card .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card button { font-size: 12px; padding: 4px 10px; border: 1px solid #3182F6; background: #fff; color: #3182F6; border-radius: 6px; cursor: pointer; }
+
+.badge {
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.map { flex: 1; }
+
+.panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: 380px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -4px 0 16px rgba(0,0,0,.12);
+  padding: 18px;
+  overflow-y: auto;
+  z-index: 50;
+}
+.panel.hidden { display: none; }
+.panel .close { position: absolute; top: 12px; right: 12px; border: none; background: none; font-size: 18px; cursor: pointer; }
+
+.review-item { border-top: 1px solid #eee; padding: 10px 0; }
+.review-item .who { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.review-item .cmt { font-size: 13px; color: #444; margin-top: 4px; white-space: pre-wrap; }
+.review-item .rdate { font-size: 12px; color: #9ca3af; font-weight: 400; }
+.review-item .rdel { margin-left: auto; border: none; background: none; color: #cf222e; font-size: 12px; cursor: pointer; opacity: .5; }
+.review-item .rdel:hover { opacity: 1; }
+
+.form label { display: block; font-size: 13px; margin: 10px 0 4px; }
+.form input, .form textarea { width: 100%; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; }
+.form button { margin-top: 12px; width: 100%; padding: 10px; border: none; border-radius: 6px; background: #3182F6; color: #fff; font-weight: 600; cursor: pointer; }
+
+/* ── 헤더 브랜드 + 홈 링크 ────────────────────────────────── */
+.brand { display: flex; align-items: center; gap: 10px; }
+.home-link {
+  color: #fff; text-decoration: none; font-size: 20px; font-weight: 700;
+  width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; background: rgba(255,255,255,.2);
+}
+.home-link:hover { background: rgba(255,255,255,.35); }
+
+/* ── 위치 강조 핀 (통통 튀는 마커) ───────────────────────────── */
+.pin-drop { position: relative; width: 26px; height: 34px; animation: drop .35s ease; }
+.pin {
+  position: absolute; left: 0; top: 0; width: 26px; height: 26px;
+  background: #ff3b30; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35);
+}
+.pin::after { content: ''; position: absolute; left: 7px; top: 7px; width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+.pin-pulse {
+  position: absolute; left: 3px; top: 20px; width: 20px; height: 8px;
+  background: rgba(255,59,48,.35); border-radius: 50%;
+  animation: pulse 1.4s ease-out infinite;
+}
+@keyframes drop { 0% { transform: translateY(-18px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.8); opacity: 0; } }
+
+/* ── 홈(랜딩) 페이지 — 구글 스타일 ──────────────────────────── */
+body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
+.home-main {
+  display: block; height: auto;
+  max-width: 360px; margin: 0 auto; padding: 90px 24px 40px;
+  text-align: center;
+}
+.home-hero { color: #191F28; margin-bottom: 44px; }
+.home-logo { font-size: 60px; line-height: 1; }
+.home-title { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -.5px; white-space: nowrap; }
+.home-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+.home-link-btn {
+  display: block; background: #fff; color: #191F28;
+  padding: 16px; border-radius: 14px; font-size: 17px; font-weight: 700;
+  text-decoration: none; border: 1px solid #E5E8EB; box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  transition: transform .1s;
+}
+.home-link-btn:active { transform: scale(.98); }
+
+/* ── 소원권 대장 ─────────────────────────────────────────────── */
+.wish-body { background: #f6f8fa; margin: 0; }
+.me select { padding: 6px 8px; border: none; border-radius: 6px; }
+.wish-main { max-width: 560px; margin: 0 auto; padding: 18px; }
+.wish-main h2 { font-size: 15px; margin: 22px 0 10px; }
+.balances { display: flex; gap: 14px; margin-top: 8px; }
+.bal-card {
+  flex: 1; background: #fff; border-radius: 14px; padding: 18px; text-align: center;
+  border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.bal-card.is-me { border-color: #3182F6; }
+.bal-name { font-size: 14px; color: #57606a; }
+.bal-count { font-size: 34px; font-weight: 800; color: #3182F6; }
+.bal-count span { font-size: 14px; color: #57606a; margin-left: 2px; }
+.wish-form { background: #fff; border-radius: 14px; padding: 16px; margin-top: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.wish-form .hint { font-size: 12px; color: #57606a; margin: 4px 0 10px; }
+.wish-form textarea { width: 100%; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; box-sizing: border-box; }
+.wish-form button { margin-top: 10px; width: 100%; padding: 11px; border: none; border-radius: 8px; background: #3182F6; color: #fff; font-weight: 700; cursor: pointer; }
+.wish-list { display: flex; flex-direction: column; gap: 10px; }
+.wish-item { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.wish-item.rejected { opacity: .6; }
+.wish-top { font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.wish-date { margin-left: auto; font-size: 11px; color: #9ca3af; }
+.wish-reason { font-size: 14px; color: #333; margin-top: 6px; white-space: pre-wrap; }
+.wish-sub { font-size: 12px; color: #3182F6; margin-top: 6px; }
+.wish-actions { display: flex; gap: 8px; margin-top: 10px; }
+.wish-actions button { flex: 1; padding: 9px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.btn-ok { background: #3182F6; color: #fff; }
+.btn-no { background: #f0f1f3; color: #cf222e; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+.tag-wait { background: #fff4e0; color: #b45309; }
+.tag-ok { background: #e6f7ee; color: #03894a; }
+.tag-no { background: #fdecec; color: #cf222e; }
+.empty { color: #9ca3af; font-size: 13px; padding: 8px 2px; }
+
+/* ══ 소원권 모바일 리디자인 ══════════════════════════════════ */
+.wish-body { background: #f6f8fa; }
+
+/* 앱바 */
+.app-bar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: #3182F6; color: #fff;
+}
+.app-bar h1 { font-size: 17px; margin: 0; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.who-select { padding: 7px 10px; border: none; border-radius: 8px; font-size: 14px; }
+.drawer-btn { position: relative; border: none; background: rgba(255,255,255,.22); width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+.drawer-badge {
+  position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px;
+  background: #e5484d; color: #fff; border-radius: 10px; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid #fff;
+}
+.drawer-badge.hidden { display: none; }
+
+/* 본문 */
+.wish-main { max-width: 480px; margin: 0 auto; padding: 16px; }
+.wish-main h2 { font-size: 15px; margin: 20px 0 10px; }
+
+/* 잔액 2층 가로 바 */
+.balances-stack { display: flex; flex-direction: column; gap: 12px; }
+.bal-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border-radius: 16px; padding: 18px 20px;
+  border: 2px solid transparent; box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.bal-bar.is-me { border-color: #3182F6; }
+.bal-emoji { font-size: 26px; }
+.bal-name { font-size: 17px; font-weight: 700; flex: 1; }
+.bal-count { font-size: 30px; font-weight: 800; color: #3182F6; }
+.bal-count small { font-size: 14px; color: #57606a; margin-left: 2px; font-weight: 600; }
+
+/* 큰 버튼 */
+.wish-actions-main { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.big-btn {
+  display: block; width: 100%; box-sizing: border-box; text-align: center;
+  padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700;
+  cursor: pointer; text-decoration: none; color: #1f2328; background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.big-btn.primary { background: #3182F6; color: #fff; }
+.big-btn.link { background: #fff; color: #57606a; }
+.big-btn:active { transform: scale(.99); }
+
+/* 바텀시트 모달 */
+.modal {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,.4);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.modal.hidden { display: none; }
+.sheet {
+  width: 100%; max-width: 480px; background: #fff;
+  border-radius: 20px 20px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+  animation: sheetUp .22s ease;
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.sheet-close { border: none; background: none; font-size: 18px; cursor: pointer; color: #57606a; }
+.sheet .hint { font-size: 13px; color: #57606a; margin: 4px 0 12px; }
+.sheet textarea, .sheet input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #d0d7de; border-radius: 10px; font-size: 15px; }
+.f-label { display: block; font-size: 13px; color: #57606a; margin: 12px 0 6px; }
+.sheet .big-btn { margin-top: 14px; }
+
+/* 토스트 */
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  background: #1f2328; color: #fff; padding: 12px 18px; border-radius: 24px;
+  font-size: 14px; z-index: 80; box-shadow: 0 4px 16px rgba(0,0,0,.25); max-width: 90%;
+}
+.toast.hidden { display: none; }
+
+/* 아카이브 요약 */
+.archive-summary { display: flex; flex-direction: column; gap: 10px; }
+.sum-card { background: #fff; border-radius: 14px; padding: 14px 16px; border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.sum-card.is-me { border-color: #3182F6; }
+.sum-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.sum-row { display: flex; gap: 14px; font-size: 14px; color: #57606a; }
+.sum-row b { color: #1f2328; }
+.sum-left { margin-left: auto; color: #3182F6; }
+.sum-left b { color: #3182F6; }
+
+/* 사용자 칩 */
+.who-chip { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 10px; }
+.who-chip.하진 { background: #fbeaf0; color: #993556; }
+.who-chip.민혁 { background: #e6f1fb; color: #185fa5; }
+
+/* ── 홈 신원 선택 ────────────────────────────────────────────── */
+.whoami-pick { display: flex; gap: 10px; margin-top: 4px; }
+.whoami-btn {
+  flex: 1; padding: 15px 12px; border: 1px solid #E5E8EB; border-radius: 12px;
+  background: #fff; color: #4E5968; font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.whoami-btn.on { background: #3182F6; color: #fff; border-color: #3182F6; }
+.whoami-pick.shake { animation: shake .4s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+/* ── 헤더 신원 칩 (지도/소원권) ──────────────────────────────── */
+.me-chip {
+  color: #fff; text-decoration: none; font-size: 14px; font-weight: 700;
+  background: rgba(255,255,255,.22); padding: 7px 12px; border-radius: 18px; white-space: nowrap;
+}
+.me-chip:hover { background: rgba(255,255,255,.35); }
