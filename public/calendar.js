@@ -73,7 +73,7 @@ function renderDayPanel() {
         <div class="ev-item" style="border-left-color:${OWNER_COLOR[e.owner]}">
           <div class="ev-top">
             <span class="ev-owner" style="background:${OWNER_COLOR[e.owner]}">${e.owner}</span>
-            ${e.start_time ? `<span class="ev-time">${e.start_time.slice(0, 5)}</span>` : '<span class="ev-time">종일</span>'}
+            <span class="ev-time">${evTimeText(e)}</span>
             <button class="rdel" data-id="${e.id}" title="삭제">✕</button>
           </div>
           <div class="ev-title">${escapeHtml(e.title)}</div>
@@ -101,16 +101,39 @@ function shortK(dateStr) {
   const [, m, d] = dateStr.split('-').map(Number);
   return `${m}.${d}`;
 }
-function buildTimeOptions() {
-  document.getElementById('evHour').innerHTML =
-    '<option value="">종일</option>' +
+function fillHM(hourId, minId) {
+  document.getElementById(hourId).innerHTML =
     Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}시</option>`).join('');
-  document.getElementById('evMin').innerHTML =
+  document.getElementById(minId).innerHTML =
     Array.from({ length: 12 }, (_, i) => {
       const mm = String(i * 5).padStart(2, '0');
       return `<option value="${mm}">${mm}분</option>`;
     }).join('');
 }
+function buildTimeOptions() {
+  fillHM('startHour', 'startMin');
+  fillHM('endHour', 'endMin');
+}
+function to24(ampm, hour, min) {
+  let h = Number(hour);
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2, '0')}:${min}`;
+}
+function fmtTimeK(t) {            // "18:30" → "오후 6:30"
+  const [h, m] = t.split(':').map(Number);
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return `${h < 12 ? '오전' : '오후'} ${hh}:${String(m).padStart(2, '0')}`;
+}
+function evTimeText(e) {
+  if (!e.start_time) return '종일';
+  const s = fmtTimeK(e.start_time.slice(0, 5));
+  return e.end_time ? `${s} ~ ${fmtTimeK(e.end_time.slice(0, 5))}` : s;
+}
+// 종일 체크박스 → 시간 선택 표시 토글
+document.getElementById('evAllday').addEventListener('change', (e) => {
+  document.getElementById('timeFields').style.display = e.target.checked ? 'none' : 'block';
+});
 
 function openAdd(dateStr) {
   addDate = dateStr || selected || todayStr();
@@ -118,9 +141,14 @@ function openAdd(dateStr) {
   const end = document.getElementById('evEndDate');
   end.value = '';
   end.min = addDate;
-  document.getElementById('evAmpm').value = 'AM';
-  document.getElementById('evHour').value = '';
-  document.getElementById('evMin').value = '00';
+  document.getElementById('evAllday').checked = true;
+  document.getElementById('timeFields').style.display = 'none';
+  document.getElementById('startAmpm').value = 'AM';
+  document.getElementById('startHour').value = '9';
+  document.getElementById('startMin').value = '00';
+  document.getElementById('endAmpm').value = 'PM';
+  document.getElementById('endHour').value = '6';
+  document.getElementById('endMin').value = '00';
   document.getElementById('evTitle').value = '';
   document.getElementById('evMemo').value = '';
   paintOwner();
@@ -153,21 +181,17 @@ document.getElementById('saveEvent').addEventListener('click', async () => {
   if (!title) return toast('내용을 입력하세요.');
   if (!eventDate) return toast('날짜를 선택하세요.');
 
-  // 오전/오후 + 시 + 분 → "HH:MM" (시 미선택이면 종일)
-  const hourSel = document.getElementById('evHour').value;
-  let startTime = '';
-  if (hourSel !== '') {
-    let h = Number(hourSel);
-    const ampm = document.getElementById('evAmpm').value;
-    if (ampm === 'PM' && h !== 12) h += 12;
-    if (ampm === 'AM' && h === 12) h = 0;
-    startTime = `${String(h).padStart(2, '0')}:${document.getElementById('evMin').value}`;
+  // 종일이면 시간 없음, 아니면 시작/종료 시간 계산
+  let startTime = '', endTime = '';
+  if (!document.getElementById('evAllday').checked) {
+    startTime = to24(document.getElementById('startAmpm').value, document.getElementById('startHour').value, document.getElementById('startMin').value);
+    endTime = to24(document.getElementById('endAmpm').value, document.getElementById('endHour').value, document.getElementById('endMin').value);
   }
 
   const endDate = document.getElementById('evEndDate').value;
   const res = await fetch('/api/events', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ owner: pickedOwner, title, eventDate, endDate, startTime, memo }),
+    body: JSON.stringify({ owner: pickedOwner, title, eventDate, endDate, startTime, endTime, memo }),
   });
   if (!res.ok) return toast('저장 실패');
   document.getElementById('addModal').classList.add('hidden');

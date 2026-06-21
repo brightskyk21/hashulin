@@ -427,11 +427,16 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
   padding: 13px 14px; border: 1px solid #d0d7de; border-radius: 10px;
   font-size: 16px; font-weight: 700; color: #191F28; background: #F2F4F6;
 }
-.time-pick { display: flex; gap: 8px; }
+.time-pick { display: flex; gap: 8px; flex: 1; }
 .time-pick select {
   flex: 1; padding: 12px 8px; border: 1px solid #d0d7de; border-radius: 10px;
   font-size: 16px; background: #fff; color: #191F28; text-align: center;
 }
+.allday-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4E5968; margin-top: 4px; cursor: pointer; }
+.allday-toggle input { width: 18px; height: 18px; }
+.time-fields { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.time-row { display: flex; align-items: center; gap: 10px; }
+.time-row-label { width: 34px; font-size: 13px; color: #8B95A1; font-weight: 600; flex-shrink: 0; }
 
 /* 남은 native 날짜/시간 입력 다듬기 (지도 방문날짜, 소원권 사용날짜) */
 input[type="date"], input[type="time"] { background: #fff; color: #191F28; }

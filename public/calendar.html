@@ -50,14 +50,25 @@
       <div id="evDateDisplay" class="date-display">—</div>
       <label class="f-label">종료일 <span class="f-hint">(여행 등 여러 날일 때만)</span></label>
       <input id="evEndDate" type="date" />
-      <label class="f-label">시간 (선택)</label>
-      <div class="time-pick">
-        <select id="evAmpm">
-          <option value="AM">오전</option>
-          <option value="PM">오후</option>
-        </select>
-        <select id="evHour"></select>
-        <select id="evMin"></select>
+      <label class="f-label">시간</label>
+      <label class="allday-toggle"><input type="checkbox" id="evAllday" checked /> 종일 (시간 없음)</label>
+      <div id="timeFields" class="time-fields" style="display:none">
+        <div class="time-row">
+          <span class="time-row-label">시작</span>
+          <div class="time-pick">
+            <select id="startAmpm"><option value="AM">오전</option><option value="PM">오후</option></select>
+            <select id="startHour"></select>
+            <select id="startMin"></select>
+          </div>
+        </div>
+        <div class="time-row">
+          <span class="time-row-label">종료</span>
+          <div class="time-pick">
+            <select id="endAmpm"><option value="AM">오전</option><option value="PM">오후</option></select>
+            <select id="endHour"></select>
+            <select id="endMin"></select>
+          </div>
+        </div>
       </div>
       <label class="f-label">내용</label>
       <input id="evTitle" type="text" placeholder="예: 저녁 데이트 🍝" />

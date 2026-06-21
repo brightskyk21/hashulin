@@ -241,12 +241,13 @@ app.get('/api/events', async (req, res) => {
 
 // ── 일정 추가 ─────────────────────────────────────────────────
 app.post('/api/events', async (req, res) => {
-  const { owner, title, eventDate, endDate, startTime, memo } = req.body;
+  const { owner, title, eventDate, endDate, startTime, endTime, memo } = req.body;
   if (!['민혁', '하진', '데이트'].includes(owner) || !title || !eventDate)
     return res.status(400).json({ error: 'owner(민혁/하진/데이트), title, eventDate 필요' });
 
   const row = { owner, title, event_date: eventDate, memo: memo || '' };
   if (startTime) row.start_time = startTime;
+  if (endTime) row.end_time = endTime;
   if (endDate && endDate >= eventDate) row.end_date = endDate; // 기간 일정
   const { data, error } = await supabase.from('events').insert(row).select().single();
   if (error) return res.status(500).json({ error: error.message });
