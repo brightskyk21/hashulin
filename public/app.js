@@ -147,15 +147,26 @@ async function openPanel(placeId) {
   const reviews = await fetch(`/api/places/${placeId}/reviews`).then((r) => r.json());
 
   const body = document.getElementById('panelBody');
+  const b = scoreBand(p.avg_score);
+  const avgText = Number(p.avg_score) ? Number(p.avg_score).toFixed(1) : '-';
+  const tags = (p.category || '').split(/[>,]/).map((s) => s.trim()).filter(Boolean);
+  const tagHtml = tags.map((t) => `<span class="cat-tag">${escapeHtml(t)}</span>`).join('');
+
   body.innerHTML = `
-    <h2 style="margin-top:0">${p.name}</h2>
-    <div class="cat">${p.category || ''}</div>
-    <div class="addr">${p.road_address || p.address || ''}</div>
-    ${p.link ? `<a href="${p.link}" target="_blank" style="font-size:12px">네이버에서 보기 ↗</a>` : ''}
-    <div style="margin:10px 0">
-      평균 <span class="badge" style="background:${scoreBand(p.avg_score).bg};color:${scoreBand(p.avg_score).fg}">${scoreBand(p.avg_score).emoji} ${Number(p.avg_score) ? Number(p.avg_score).toFixed(1) : '-'}</span>
-      <span class="cat">· 평가 ${p.review_count}개</span>
-      <button id="delPlace" style="float:right;font-size:12px;border:none;background:none;color:#cf222e;cursor:pointer">삭제</button>
+    <div class="place-head">
+      <h2 class="place-name">${escapeHtml(p.name)}</h2>
+      <div class="cat-tags">${tagHtml}</div>
+      <div class="place-addr">${escapeHtml(p.road_address || p.address || '')}</div>
+      ${p.link ? `<a class="naver-link" href="${p.link}" target="_blank">네이버에서 보기 ↗</a>` : ''}
+    </div>
+
+    <div class="score-summary">
+      <span class="ss-emoji" style="background:${b.bg};color:${b.fg}">${b.emoji || '–'}</span>
+      <div class="ss-main">
+        <div class="ss-score" style="color:${b.bg}">${avgText}<small>/ 10</small></div>
+        <div class="ss-sub">평가 ${p.review_count}개 · 평균</div>
+      </div>
+      <button id="delPlace" class="ss-del" title="가게 삭제">삭제</button>
     </div>
 
     <div class="form">
