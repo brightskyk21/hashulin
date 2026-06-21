@@ -84,9 +84,29 @@ function renderDayPanel() {
 
 // ── 추가 모달 ──────────────────────────────────────────────────
 let pickedOwner = localStorage.getItem('whoami') || '민혁';
+let addDate;
+
+function fmtDateK(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return `${y}년 ${m}월 ${d}일 (${WEEK[new Date(y, m - 1, d).getDay()]})`;
+}
+function buildTimeOptions() {
+  document.getElementById('evHour').innerHTML =
+    '<option value="">종일</option>' +
+    Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}시</option>`).join('');
+  document.getElementById('evMin').innerHTML =
+    Array.from({ length: 12 }, (_, i) => {
+      const mm = String(i * 5).padStart(2, '0');
+      return `<option value="${mm}">${mm}분</option>`;
+    }).join('');
+}
+
 function openAdd(dateStr) {
-  document.getElementById('evDate').value = dateStr || selected || todayStr();
-  document.getElementById('evTime').value = '';
+  addDate = dateStr || selected || todayStr();
+  document.getElementById('evDateDisplay').textContent = fmtDateK(addDate);
+  document.getElementById('evAmpm').value = 'AM';
+  document.getElementById('evHour').value = '';
+  document.getElementById('evMin').value = '00';
   document.getElementById('evTitle').value = '';
   document.getElementById('evMemo').value = '';
   paintOwner();
@@ -114,11 +134,21 @@ document.getElementById('addModal').addEventListener('click', (e) => {
 
 document.getElementById('saveEvent').addEventListener('click', async () => {
   const title = document.getElementById('evTitle').value.trim();
-  const eventDate = document.getElementById('evDate').value;
-  const startTime = document.getElementById('evTime').value;
+  const eventDate = addDate;
   const memo = document.getElementById('evMemo').value.trim();
   if (!title) return toast('내용을 입력하세요.');
   if (!eventDate) return toast('날짜를 선택하세요.');
+
+  // 오전/오후 + 시 + 분 → "HH:MM" (시 미선택이면 종일)
+  const hourSel = document.getElementById('evHour').value;
+  let startTime = '';
+  if (hourSel !== '') {
+    let h = Number(hourSel);
+    const ampm = document.getElementById('evAmpm').value;
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    startTime = `${String(h).padStart(2, '0')}:${document.getElementById('evMin').value}`;
+  }
 
   const res = await fetch('/api/events', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -164,5 +194,6 @@ function escapeHtml(s = '') {
   viewYear = t.getFullYear();
   viewMonth = t.getMonth();
   selected = todayStr();
+  buildTimeOptions();
   load();
 })();

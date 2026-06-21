@@ -421,3 +421,19 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 
 .owner-pick { display: flex; gap: 8px; }
 .owner-btn { flex: 1; padding: 11px; border: 1px solid #E5E8EB; border-radius: 10px; background: #fff; color: #4E5968; font-weight: 700; font-size: 14px; cursor: pointer; }
+
+/* ── 예쁜 날짜 표시 + 시간 선택 ──────────────────────────────── */
+.date-display {
+  padding: 13px 14px; border: 1px solid #d0d7de; border-radius: 10px;
+  font-size: 16px; font-weight: 700; color: #191F28; background: #F2F4F6;
+}
+.time-pick { display: flex; gap: 8px; }
+.time-pick select {
+  flex: 1; padding: 12px 8px; border: 1px solid #d0d7de; border-radius: 10px;
+  font-size: 16px; background: #fff; color: #191F28; text-align: center;
+}
+
+/* 남은 native 날짜/시간 입력 다듬기 (지도 방문날짜, 소원권 사용날짜) */
+input[type="date"], input[type="time"] { background: #fff; color: #191F28; }
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value { text-align: left; }

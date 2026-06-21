@@ -47,9 +47,16 @@
         <button class="owner-btn" data-owner="데이트">데이트</button>
       </div>
       <label class="f-label">날짜</label>
-      <input id="evDate" type="date" />
+      <div id="evDateDisplay" class="date-display">—</div>
       <label class="f-label">시간 (선택)</label>
-      <input id="evTime" type="time" />
+      <div class="time-pick">
+        <select id="evAmpm">
+          <option value="AM">오전</option>
+          <option value="PM">오후</option>
+        </select>
+        <select id="evHour"></select>
+        <select id="evMin"></select>
+      </div>
       <label class="f-label">내용</label>
       <input id="evTitle" type="text" placeholder="예: 저녁 데이트 🍝" />
       <label class="f-label">메모 (선택)</label>
