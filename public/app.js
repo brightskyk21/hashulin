@@ -149,7 +149,10 @@ async function openPanel(placeId) {
   const body = document.getElementById('panelBody');
   const b = scoreBand(p.avg_score);
   const avgText = Number(p.avg_score) ? Number(p.avg_score).toFixed(1) : '-';
-  const tags = (p.category || '').split(/[>,]/).map((s) => s.trim()).filter(Boolean);
+  const tags = (p.category || '')
+    .split(/[>,]/)
+    .map((s) => s.trim())
+    .filter((t) => t && t !== '음식점');
   const tagHtml = tags.map((t) => `<span class="cat-tag">${escapeHtml(t)}</span>`).join('');
 
   body.innerHTML = `
