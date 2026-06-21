@@ -29,9 +29,14 @@ function renderMonth() {
   for (let i = 0; i < firstWeekday; i++) cells.push('<div class="cal-cell empty"></div>');
   for (let d = 1; d <= daysInMonth; d++) {
     const date = ymd(viewYear, viewMonth, d);
-    const dayEvents = events.filter((e) => e.event_date === date);
-    const dots = dayEvents.slice(0, 3)
-      .map((e) => `<i class="dot" style="background:${OWNER_COLOR[e.owner]}"></i>`).join('');
+    const dayEvents = events.filter((e) => e.event_date <= date && date <= (e.end_date || e.event_date));
+    const bars = dayEvents.slice(0, 3).map((e) => {
+      const end = e.end_date || e.event_date;
+      const bl = e.event_date === date ? 6 : 0;  // 시작일 왼쪽 둥글게
+      const br = end === date ? 6 : 0;            // 종료일 오른쪽 둥글게
+      return `<div class="cal-bar" style="background:${OWNER_COLOR[e.owner]};border-radius:${bl}px ${br}px ${br}px ${bl}px"></div>`;
+    }).join('');
+    const more = dayEvents.length > 3 ? `<span class="cal-more">+${dayEvents.length - 3}</span>` : '';
     const cls = ['cal-cell'];
     if (date === today) cls.push('today');
     if (date === selected) cls.push('selected');
@@ -40,7 +45,7 @@ function renderMonth() {
     cells.push(`
       <div class="${cls.join(' ')}" data-date="${date}">
         <span class="cal-num ${numCls}">${d}</span>
-        <div class="cal-dots">${dots}</div>
+        <div class="cal-bars">${bars}${more}</div>
       </div>`);
   }
 
@@ -53,7 +58,7 @@ function renderMonth() {
 
 function renderDayPanel() {
   const panel = document.getElementById('dayPanel');
-  const dayEvents = events.filter((e) => e.event_date === selected);
+  const dayEvents = events.filter((e) => e.event_date <= selected && selected <= (e.end_date || e.event_date));
   const [y, m, d] = selected.split('-').map(Number);
   const wd = WEEK[new Date(y, m - 1, d).getDay()];
 
@@ -72,6 +77,8 @@ function renderDayPanel() {
             <button class="rdel" data-id="${e.id}" title="삭제">✕</button>
           </div>
           <div class="ev-title">${escapeHtml(e.title)}</div>
+          ${e.end_date && e.end_date !== e.event_date
+            ? `<div class="ev-range">📅 ${shortK(e.event_date)} ~ ${shortK(e.end_date)} (여행/연속)</div>` : ''}
           ${e.memo ? `<div class="ev-memo">${escapeHtml(e.memo)}</div>` : ''}
         </div>`).join('')}
   `;
@@ -90,6 +97,10 @@ function fmtDateK(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return `${y}년 ${m}월 ${d}일 (${WEEK[new Date(y, m - 1, d).getDay()]})`;
 }
+function shortK(dateStr) {
+  const [, m, d] = dateStr.split('-').map(Number);
+  return `${m}.${d}`;
+}
 function buildTimeOptions() {
   document.getElementById('evHour').innerHTML =
     '<option value="">종일</option>' +
@@ -104,6 +115,9 @@ function buildTimeOptions() {
 function openAdd(dateStr) {
   addDate = dateStr || selected || todayStr();
   document.getElementById('evDateDisplay').textContent = fmtDateK(addDate);
+  const end = document.getElementById('evEndDate');
+  end.value = '';
+  end.min = addDate;
   document.getElementById('evAmpm').value = 'AM';
   document.getElementById('evHour').value = '';
   document.getElementById('evMin').value = '00';
@@ -150,9 +164,10 @@ document.getElementById('saveEvent').addEventListener('click', async () => {
     startTime = `${String(h).padStart(2, '0')}:${document.getElementById('evMin').value}`;
   }
 
+  const endDate = document.getElementById('evEndDate').value;
   const res = await fetch('/api/events', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ owner: pickedOwner, title, eventDate, startTime, memo }),
+    body: JSON.stringify({ owner: pickedOwner, title, eventDate, endDate, startTime, memo }),
   });
   if (!res.ok) return toast('저장 실패');
   document.getElementById('addModal').classList.add('hidden');
