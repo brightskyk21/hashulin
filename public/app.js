@@ -248,4 +248,49 @@ function todayLocal() {
   return d.toISOString().slice(0, 10);
 }
 
+// ── 모바일 바텀시트: 핸들 끌어서 펼치기/접기 ───────────────────
+function initSheet() {
+  const sheet = document.querySelector('.sidebar');
+  const handle = document.querySelector('.sheet-handle');
+  if (!sheet || !handle) return;
+  const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+  const collapsedY = () => Math.max(0, sheet.offsetHeight - 140); // 검색바까지만 살짝 보이게
+  let curY = 0, startTouchY = 0, startCurY = 0, dragging = false;
+
+  const apply = (y, anim) => {
+    sheet.style.transition = anim ? 'transform .25s ease' : 'none';
+    sheet.style.transform = `translateY(${y}px)`;
+    curY = y;
+  };
+  const expand = () => apply(0, true);
+  const collapse = () => apply(collapsedY(), true);
+
+  const reset = () => {
+    if (isMobile()) collapse();
+    else { sheet.style.transform = ''; sheet.style.transition = ''; }
+  };
+
+  handle.addEventListener('touchstart', (e) => {
+    if (!isMobile()) return;
+    dragging = true; startTouchY = e.touches[0].clientY; startCurY = curY;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+  handle.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const dy = e.touches[0].clientY - startTouchY;
+    apply(Math.min(collapsedY(), Math.max(0, startCurY + dy)), false);
+    e.preventDefault();
+  }, { passive: false });
+  handle.addEventListener('touchend', () => {
+    if (!dragging) return; dragging = false;
+    const moved = Math.abs(curY - startCurY);
+    if (moved < 6) (curY > collapsedY() / 2 ? expand() : collapse());   // 탭 → 토글
+    else (curY < collapsedY() / 2 ? expand() : collapse());            // 드래그 → 가까운 쪽
+  });
+
+  window.addEventListener('resize', reset);
+  reset();
+}
+
 initMap();
+initSheet();
