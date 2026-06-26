@@ -162,6 +162,7 @@ async function openPanel(placeId) {
   const p = places.find((x) => x.id === placeId);
   if (!p) return;
   const reviews = await fetch(`/api/places/${placeId}/reviews`).then((r) => r.json());
+  const photos = await fetch(`/api/places/${placeId}/photos`).then((r) => r.json()).catch(() => []);
 
   const body = document.getElementById('panelBody');
   const b = scoreBand(p.avg_score);
@@ -180,6 +181,16 @@ async function openPanel(placeId) {
         .join('')}</div>`
     : '';
 
+  const photoStrip = `
+    <div class="photo-strip">
+      ${(Array.isArray(photos) ? photos : []).map((ph) => `
+        <div class="photo-tile">
+          <img src="${ph.url}" alt="사진" />
+          <button class="photo-del" data-id="${ph.id}" title="삭제">✕</button>
+        </div>`).join('')}
+      <label class="photo-add">＋<input id="photoInput" type="file" accept="image/*" hidden /></label>
+    </div>`;
+
   body.innerHTML = `
     <div class="place-head">
       <h2 class="place-name">${escapeHtml(p.name)}</h2>
@@ -187,6 +198,8 @@ async function openPanel(placeId) {
       <div class="place-addr">${escapeHtml(p.road_address || p.address || '')}</div>
       ${p.link ? `<a class="naver-link" href="${p.link}" target="_blank">네이버에서 보기 ↗</a>` : ''}
     </div>
+
+    ${photoStrip}
 
     ${p.status === 'wish'
       ? `<div class="wish-banner">
@@ -252,6 +265,14 @@ async function openPanel(placeId) {
   );
   body.querySelectorAll('.rfilter-btn').forEach((btn) =>
     btn.addEventListener('click', () => { reviewFilter = btn.dataset.f; openPanel(placeId); })
+  );
+  const pin = body.querySelector('#photoInput');
+  if (pin) pin.addEventListener('change', (e) => { if (e.target.files[0]) uploadPlacePhoto(placeId, e.target.files[0]); });
+  body.querySelectorAll('.photo-del').forEach((btn) =>
+    btn.addEventListener('click', () => deletePhoto(btn.dataset.id, placeId))
+  );
+  body.querySelectorAll('.photo-tile img').forEach((im) =>
+    im.addEventListener('click', () => window.open(im.src, '_blank'))
   );
 
   // 스펙트럼 슬라이더: 드래그하면 점수·이모지·색 실시간 갱신
@@ -332,6 +353,42 @@ document.getElementById('panelClose').addEventListener('click', () => {
 
 function escapeHtml(s = '') {
   return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+// ── 사진: 업로드 전 리사이즈(가로/세로 최대 1280px) ────────────
+function resizeImage(file, maxDim = 1280, quality = 0.82) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      c.toBlob((b) => resolve(b || file), 'image/jpeg', quality);
+    };
+    img.onerror = () => resolve(file);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function uploadPlacePhoto(placeId, file) {
+  const blob = await resizeImage(file);
+  const fd = new FormData();
+  fd.append('photo', blob, 'photo.jpg');
+  const res = await fetch(`/api/places/${placeId}/photos`, { method: 'POST', body: fd });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    return alert(e.error || '사진 업로드 실패');
+  }
+  openPanel(placeId);
+}
+
+async function deletePhoto(photoId, placeId) {
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  await fetch(`/api/photos/${photoId}`, { method: 'DELETE' });
+  openPanel(placeId);
 }
 
 // 오늘 날짜(로컬) → YYYY-MM-DD

@@ -1,11 +1,25 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
+const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// 사진 업로드(메모리) — 최대 8MB
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
+
+// 스토리지 업로드 헬퍼: 버퍼 → photos 버킷 → 공개 URL
+async function uploadToStorage(folder, id, file) {
+  const ext = (file.mimetype.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+  const sp = `${folder}/${id ? id + '/' : ''}${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage.from('photos').upload(sp, file.buffer, { contentType: file.mimetype });
+  if (error) throw error;
+  const url = supabase.storage.from('photos').getPublicUrl(sp).data.publicUrl;
+  return { url, path: sp };
+}
 
 // ── Supabase (서버 전용 키 사용) ───────────────────────────────
 const supabase = createClient(
@@ -299,6 +313,65 @@ app.put('/api/events/:id', async (req, res) => {
 // ── 일정 삭제 ─────────────────────────────────────────────────
 app.delete('/api/events/:id', async (req, res) => {
   const { error } = await supabase.from('events').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+// ── 가게(식당) 사진 ───────────────────────────────────────────
+app.get('/api/places/:id/photos', async (req, res) => {
+  const { data, error } = await supabase
+    .from('place_photos').select('*').eq('place_id', req.params.id)
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/places/:id/photos', upload.single('photo'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: '사진 파일이 필요해요' });
+  try {
+    const { url, path: sp } = await uploadToStorage('places', req.params.id, req.file);
+    const { data, error } = await supabase
+      .from('place_photos').insert({ place_id: req.params.id, url, path: sp }).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.delete('/api/photos/:id', async (req, res) => {
+  const { data: ph } = await supabase.from('place_photos').select('path').eq('id', req.params.id).maybeSingle();
+  if (ph?.path) await supabase.storage.from('photos').remove([ph.path]);
+  const { error } = await supabase.from('place_photos').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+// ── 커플 사진 (홈) ────────────────────────────────────────────
+app.get('/api/couple-photos', async (req, res) => {
+  const { data, error } = await supabase
+    .from('couple_photos').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/couple-photos', upload.single('photo'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: '사진 파일이 필요해요' });
+  try {
+    const { url, path: sp } = await uploadToStorage('couple', null, req.file);
+    const { data, error } = await supabase
+      .from('couple_photos').insert({ url, path: sp, caption: req.body.caption || '' }).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.delete('/api/couple-photos/:id', async (req, res) => {
+  const { data: ph } = await supabase.from('couple_photos').select('path').eq('id', req.params.id).maybeSingle();
+  if (ph?.path) await supabase.storage.from('photos').remove([ph.path]);
+  const { error } = await supabase.from('couple_photos').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });
