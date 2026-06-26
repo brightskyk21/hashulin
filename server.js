@@ -126,6 +126,18 @@ app.post('/api/places/:id/reviews', async (req, res) => {
   res.json(data);
 });
 
+// ── 평가 수정 ─────────────────────────────────────────────────
+app.put('/api/reviews/:id', async (req, res) => {
+  const { score, comment, visitedOn } = req.body;
+  const s = Number(score);
+  if (!(s >= 1 && s <= 10)) return res.status(400).json({ error: 'score는 1~10' });
+  const row = { score: Math.round(s * 10) / 10, comment: comment || '' };
+  if (visitedOn) row.visited_on = visitedOn;
+  const { data, error } = await supabase.from('reviews').update(row).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // ── 평가 삭제 ─────────────────────────────────────────────────
 app.delete('/api/reviews/:id', async (req, res) => {
   const { error } = await supabase.from('reviews').delete().eq('id', req.params.id);

@@ -1,6 +1,9 @@
 // ── 상태 ───────────────────────────────────────────────────────
 let map;
 let markers = {};            // place.id -> naver.maps.Marker
+let sortMode = 'recent';     // 저장된 가게 정렬: recent | score
+let reviewFilter = '전체';   // 리뷰 필터: 전체 | 민혁 | 하진
+let editingReviewId = null;  // 수정 중인 리뷰 id
 const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
 const meChip = document.getElementById('meChip');
 if (meChip) meChip.textContent = ME || '이름 선택 →';
@@ -100,6 +103,9 @@ async function savePlace(it) {
 async function loadPlaces() {
   const places = await fetch('/api/places').then((r) => r.json());
 
+  // 평점순 정렬 (최신순은 서버 기본 순서 유지)
+  if (sortMode === 'score') places.sort((a, b) => Number(b.avg_score) - Number(a.avg_score));
+
   // 마커 갱신
   Object.values(markers).forEach((m) => m.setMap(null));
   markers = {};
@@ -141,6 +147,7 @@ async function loadPlaces() {
 
 // ── 상세/평가 패널 ────────────────────────────────────────────
 async function openPanel(placeId) {
+  editingReviewId = null;   // 패널 (재)렌더 시 수정모드 해제
   const places = await fetch('/api/places').then((r) => r.json());
   const p = places.find((x) => x.id === placeId);
   if (!p) return;
@@ -154,6 +161,14 @@ async function openPanel(placeId) {
     .map((s) => s.trim())
     .filter((t) => t && t !== '음식점');
   const tagHtml = tags.map((t) => `<span class="cat-tag">${escapeHtml(t)}</span>`).join('');
+
+  // 사용자별 리뷰 필터
+  const shownReviews = reviewFilter === '전체' ? reviews : reviews.filter((r) => r.reviewer === reviewFilter);
+  const filterHtml = reviews.length
+    ? `<div class="rfilter">${['전체', '민혁', '하진']
+        .map((f) => `<button class="rfilter-btn ${reviewFilter === f ? 'on' : ''}" data-f="${f}">${f}</button>`)
+        .join('')}</div>`
+    : '';
 
   body.innerHTML = `
     <div class="place-head">
@@ -188,23 +203,35 @@ async function openPanel(placeId) {
       <button id="addReview">평가 등록</button>
     </div>
 
-    <div id="reviewList" style="margin-top:14px">
-      ${reviews.map((r) => `
-        <div class="review-item">
-          <div class="who">
-            ${r.reviewer}
-            <span class="badge" style="background:${scoreColor(Number(r.score))};font-size:11px">${Number(r.score).toFixed(1)}</span>
-            <span class="rdate">${r.visited_on || ''}</span>
-            <button class="rdel" data-id="${r.id}" title="삭제">✕</button>
-          </div>
-          ${r.comment ? `<div class="cmt">${escapeHtml(r.comment)}</div>` : ''}
-        </div>`).join('') || '<div class="cat">아직 평가가 없어요.</div>'}
+    <div style="margin-top:14px">
+      ${filterHtml}
+      <div id="reviewList">
+        ${shownReviews.map((r) => `
+          <div class="review-item">
+            <div class="who">
+              ${r.reviewer}
+              <span class="badge" style="background:${scoreColor(Number(r.score))};font-size:11px">${Number(r.score).toFixed(1)}</span>
+              <span class="rdate">${r.visited_on || ''}</span>
+              <span class="rtools">
+                <button class="redit" data-id="${r.id}" title="수정">✏️</button>
+                <button class="rdel" data-id="${r.id}" title="삭제">✕</button>
+              </span>
+            </div>
+            ${r.comment ? `<div class="cmt">${escapeHtml(r.comment)}</div>` : ''}
+          </div>`).join('') || `<div class="cat">${reviewFilter === '전체' ? '아직 평가가 없어요.' : '이 사람의 평가가 없어요.'}</div>`}
+      </div>
     </div>`;
 
   body.querySelector('#addReview').addEventListener('click', () => addReview(placeId));
   body.querySelector('#delPlace').addEventListener('click', () => deletePlace(placeId));
   body.querySelectorAll('.rdel').forEach((btn) =>
     btn.addEventListener('click', () => deleteReview(btn.dataset.id, placeId))
+  );
+  body.querySelectorAll('.redit').forEach((btn) =>
+    btn.addEventListener('click', () => openReviewEdit(reviews.find((r) => r.id === btn.dataset.id)))
+  );
+  body.querySelectorAll('.rfilter-btn').forEach((btn) =>
+    btn.addEventListener('click', () => { reviewFilter = btn.dataset.f; openPanel(placeId); })
   );
 
   // 스펙트럼 슬라이더: 드래그하면 점수·이모지·색 실시간 갱신
@@ -229,20 +256,35 @@ async function deleteReview(reviewId, placeId) {
   openPanel(placeId);
 }
 
+function openReviewEdit(r) {
+  if (!r) return;
+  editingReviewId = r.id;
+  const body = document.getElementById('panelBody');
+  body.querySelector('#dateInput').value = r.visited_on || todayLocal();
+  const slider = body.querySelector('#scoreInput');
+  slider.value = r.score;
+  slider.dispatchEvent(new Event('input'));        // 점수 읽기값 갱신
+  body.querySelector('#commentInput').value = r.comment || '';
+  body.querySelector('#addReview').textContent = '평가 수정';
+  body.querySelector('.form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 async function addReview(placeId) {
   const reviewer = ME;
-  if (!reviewer) return alert('홈으로 가서 하진/민혁을 먼저 선택하세요.');
+  const editing = editingReviewId;
+  if (!editing && !reviewer) return alert('홈으로 가서 하진/민혁을 먼저 선택하세요.');
   const score = document.getElementById('scoreInput').value;
   const comment = document.getElementById('commentInput').value;
   const visitedOn = document.getElementById('dateInput').value;
   if (!(Number(score) >= 1 && Number(score) <= 10)) return alert('점수는 1~10 사이로 입력하세요.');
 
-  const res = await fetch(`/api/places/${placeId}/reviews`, {
-    method: 'POST',
+  const res = await fetch(editing ? `/api/reviews/${editing}` : `/api/places/${placeId}/reviews`, {
+    method: editing ? 'PUT' : 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ reviewer, score, comment, visitedOn }),
+    body: JSON.stringify(editing ? { score, comment, visitedOn } : { reviewer, score, comment, visitedOn }),
   });
-  if (!res.ok) return alert('등록 실패');
+  if (!res.ok) return alert(editing ? '수정 실패' : '등록 실패');
+  editingReviewId = null;
   await loadPlaces();
   openPanel(placeId);
 }
@@ -312,6 +354,15 @@ function initSheet() {
   window.addEventListener('resize', reset);
   reset();
 }
+
+// 저장된 가게 정렬 토글
+document.querySelectorAll('.sort-btn').forEach((btn) =>
+  btn.addEventListener('click', () => {
+    sortMode = btn.dataset.sort;
+    document.querySelectorAll('.sort-btn').forEach((b) => b.classList.toggle('on', b === btn));
+    loadPlaces();
+  })
+);
 
 initMap();
 initSheet();

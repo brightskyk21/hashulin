@@ -71,7 +71,7 @@
         const limit = ymd(new Date(t.getFullYear(), t.getMonth() + 1, t.getDate())); // 한 달 뒤
         // 오늘 ~ 한 달 이내 시작하는 일정만 (날짜순)
         const list = (Array.isArray(evs) ? evs : []).filter((e) => e.event_date >= today && e.event_date <= limit);
-        const up = list.slice(0, 5);
+        const up = list.slice(0, 3);
         if (!up.length) { box.innerHTML = '<div class="hc-empty">한 달 이내 일정이 없어요</div>'; return; }
         box.innerHTML = up.map((e) => {
           const [y, m, d] = e.event_date.split('-').map(Number);
@@ -82,7 +82,7 @@
             <span class="hc-title">${escapeHtml(e.title)}</span>
             <span class="hc-owner" style="color:${OWNER_COLOR[e.owner]}">${e.owner}</span>
           </a>`;
-        }).join('') + (list.length > 5 ? `<a class="hc-more" href="/calendar.html">+${list.length - 5}개 더 보기 ›</a>` : '');
+        }).join('') + (list.length > 3 ? `<a class="hc-more" href="/calendar.html">+${list.length - 3}개 더 보기 ›</a>` : '');
       } catch (_) { box.innerHTML = '<div class="hc-empty">일정을 불러오지 못했어요</div>'; }
     }
     loadUpcoming();
