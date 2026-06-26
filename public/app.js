@@ -99,6 +99,18 @@ async function savePlace(it, status = 'visited') {
   }).then((r) => r.json());
   await loadPlaces();
   openPanel(place.id);
+  // 실제 저장된 상태 기준으로 피드백
+  toast(place.status === 'wish' ? '🤍 위시에 추가됐어요' : '저장됐어요 — 평가해보세요');
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2200);
 }
 
 // ── 저장된 가게 로드 + 마커 ────────────────────────────────────
@@ -301,6 +313,7 @@ async function convertToVisited(placeId) {
   });
   await loadPlaces();
   openPanel(placeId);
+  toast('방문함으로 바꿨어요');
 }
 
 async function deleteReview(reviewId, placeId) {
@@ -341,6 +354,7 @@ async function addReview(placeId) {
   editingReviewId = null;
   await loadPlaces();
   openPanel(placeId);
+  toast(editing ? '평가 수정됐어요' : '평가 등록됐어요 ✍️');
 }
 
 async function deletePlace(placeId) {
