@@ -10,7 +10,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: #3182F6; /* 네이버 그린 */
+  background: #C0413A; /* 네이버 그린 */
   color: #fff;
 }
 header h1 { font-size: 18px; margin: 0; }
@@ -29,7 +29,7 @@ header h1 { font-size: 18px; margin: 0; }
 
 .search { display: flex; gap: 6px; }
 .search input { flex: 1; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 16px; }
-.search button { padding: 8px 14px; border: none; border-radius: 6px; background: #3182F6; color: #fff; cursor: pointer; }
+.search button { padding: 8px 14px; border: none; border-radius: 6px; background: #C0413A; color: #fff; cursor: pointer; }
 
 .results { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -45,7 +45,7 @@ header h1 { font-size: 18px; margin: 0; }
 .card .cat { font-size: 12px; color: #57606a; }
 .card .addr { font-size: 12px; color: #57606a; margin-top: 2px; }
 .card .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.card button { font-size: 12px; padding: 4px 10px; border: 1px solid #3182F6; background: #fff; color: #3182F6; border-radius: 6px; cursor: pointer; }
+.card button { font-size: 12px; padding: 4px 10px; border: 1px solid #C0413A; background: #fff; color: #C0413A; border-radius: 6px; cursor: pointer; }
 
 .badge {
   display: inline-block;
@@ -91,23 +91,23 @@ header h1 { font-size: 18px; margin: 0; }
 .review-item .rtools { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .review-item .rtools .rdel { margin-left: 0; }
 .review-item .redit { border: none; background: none; color: #b0b8c1; font-size: 12px; cursor: pointer; padding: 0; opacity: .7; }
-.review-item .redit:hover { color: #3182F6; opacity: 1; }
+.review-item .redit:hover { color: #C0413A; opacity: 1; }
 
 /* 저장된 가게 정렬 토글 */
 .list-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 8px; }
 .list-head h2 { margin: 0; }
 .sort-toggle { display: flex; gap: 4px; }
 .sort-btn { border: 1px solid #d0d7de; background: #fff; color: #57606a; font-size: 11px; padding: 4px 9px; border-radius: 8px; cursor: pointer; }
-.sort-btn.on { background: #3182F6; color: #fff; border-color: #3182F6; }
+.sort-btn.on { background: #C0413A; color: #fff; border-color: #C0413A; }
 
 /* 리뷰 사용자 필터 */
 .rfilter { display: flex; gap: 6px; margin-bottom: 10px; }
 .rfilter-btn { border: 1px solid #d0d7de; background: #fff; color: #57606a; font-size: 12px; padding: 5px 12px; border-radius: 14px; cursor: pointer; }
-.rfilter-btn.on { background: #3182F6; color: #fff; border-color: #3182F6; }
+.rfilter-btn.on { background: #C0413A; color: #fff; border-color: #C0413A; }
 
 .form label { display: block; font-size: 13px; margin: 10px 0 4px; }
 .form input, .form textarea { width: 100%; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 16px; }
-.form button { margin-top: 12px; width: 100%; padding: 10px; border: none; border-radius: 6px; background: #3182F6; color: #fff; font-weight: 600; cursor: pointer; }
+.form button { margin-top: 12px; width: 100%; padding: 10px; border: none; border-radius: 6px; background: #C0413A; color: #fff; font-weight: 600; cursor: pointer; }
 
 /* ── 가게 상세 헤더 (이름 박싱 + 카테고리 칩 + 작은 주소) ────── */
 .place-head { padding: 2px 0 14px; border-bottom: 1px solid #eef0f3; margin-bottom: 14px; }
@@ -117,11 +117,11 @@ header h1 { font-size: 18px; margin: 0; }
 }
 .cat-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .cat-tag {
-  font-size: 12px; font-weight: 600; color: #3182F6;
-  background: #EEF3FB; padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: #C0413A;
+  background: #FBEAE8; padding: 4px 10px; border-radius: 999px;
 }
 .place-addr { font-size: 12px; color: #8B95A1; margin-top: 10px; line-height: 1.4; }
-.naver-link { display: inline-block; font-size: 12px; color: #3182F6; text-decoration: none; margin-top: 6px; }
+.naver-link { display: inline-block; font-size: 12px; color: #C0413A; text-decoration: none; margin-top: 6px; }
 .naver-link:hover { text-decoration: underline; }
 
 /* ── 점수 요약 카드 (평균 / 이모지 / 평가수) ────────────────── */
@@ -188,13 +188,13 @@ header h1 { font-size: 18px; margin: 0; }
 @keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.8); opacity: 0; } }
 
 /* ── 홈(랜딩) 페이지 — 구글 스타일 ──────────────────────────── */
-body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
+body.home { background: #C0413A; min-height: 100vh; margin: 0; }
 .home-main {
   display: block; height: auto;
   max-width: 360px; margin: 0 auto; padding: 56px 24px 40px;
   text-align: center;
 }
-.home-hero { color: #191F28; margin-bottom: 44px; }
+.home-hero { color: #fff; margin-bottom: 44px; }
 .home-logo { font-size: 60px; line-height: 1; }
 .home-title { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -.5px; white-space: nowrap; }
 .home-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
@@ -216,24 +216,24 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
   flex: 1; background: #fff; border-radius: 14px; padding: 18px; text-align: center;
   border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-.bal-card.is-me { border-color: #3182F6; }
+.bal-card.is-me { border-color: #C0413A; }
 .bal-name { font-size: 14px; color: #57606a; }
-.bal-count { font-size: 34px; font-weight: 800; color: #3182F6; }
+.bal-count { font-size: 34px; font-weight: 800; color: #C0413A; }
 .bal-count span { font-size: 14px; color: #57606a; margin-left: 2px; }
 .wish-form { background: #fff; border-radius: 14px; padding: 16px; margin-top: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .wish-form .hint { font-size: 12px; color: #57606a; margin: 4px 0 10px; }
 .wish-form textarea { width: 100%; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; box-sizing: border-box; }
-.wish-form button { margin-top: 10px; width: 100%; padding: 11px; border: none; border-radius: 8px; background: #3182F6; color: #fff; font-weight: 700; cursor: pointer; }
+.wish-form button { margin-top: 10px; width: 100%; padding: 11px; border: none; border-radius: 8px; background: #C0413A; color: #fff; font-weight: 700; cursor: pointer; }
 .wish-list { display: flex; flex-direction: column; gap: 10px; }
 .wish-item { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .wish-item.rejected { opacity: .6; }
 .wish-top { font-size: 14px; display: flex; align-items: center; gap: 6px; }
 .wish-date { margin-left: auto; font-size: 11px; color: #9ca3af; }
 .wish-reason { font-size: 14px; color: #333; margin-top: 6px; white-space: pre-wrap; }
-.wish-sub { font-size: 12px; color: #3182F6; margin-top: 6px; }
+.wish-sub { font-size: 12px; color: #C0413A; margin-top: 6px; }
 .wish-actions { display: flex; gap: 8px; margin-top: 10px; }
 .wish-actions button { flex: 1; padding: 9px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
-.btn-ok { background: #3182F6; color: #fff; }
+.btn-ok { background: #C0413A; color: #fff; }
 .btn-no { background: #f0f1f3; color: #cf222e; }
 .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
 .tag-wait { background: #fff4e0; color: #b45309; }
@@ -248,7 +248,7 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .app-bar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; background: #3182F6; color: #fff;
+  padding: 12px 16px; background: #C0413A; color: #fff;
 }
 .app-bar h1 { font-size: 17px; margin: 0; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
@@ -272,10 +272,10 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
   background: #fff; border-radius: 16px; padding: 18px 20px;
   border: 2px solid transparent; box-shadow: 0 2px 10px rgba(0,0,0,.06);
 }
-.bal-bar.is-me { border-color: #3182F6; }
+.bal-bar.is-me { border-color: #C0413A; }
 .bal-emoji { font-size: 26px; }
 .bal-name { font-size: 17px; font-weight: 700; flex: 1; }
-.bal-count { font-size: 30px; font-weight: 800; color: #3182F6; }
+.bal-count { font-size: 30px; font-weight: 800; color: #C0413A; }
 .bal-count small { font-size: 14px; color: #57606a; margin-left: 2px; font-weight: 600; }
 
 /* 큰 버튼 */
@@ -286,7 +286,7 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
   cursor: pointer; text-decoration: none; color: #1f2328; background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-.big-btn.primary { background: #3182F6; color: #fff; }
+.big-btn.primary { background: #C0413A; color: #fff; }
 .big-btn.link { background: #fff; color: #57606a; }
 .big-btn:active { transform: scale(.99); }
 
@@ -321,12 +321,12 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 /* 아카이브 요약 */
 .archive-summary { display: flex; flex-direction: column; gap: 10px; }
 .sum-card { background: #fff; border-radius: 14px; padding: 14px 16px; border: 2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-.sum-card.is-me { border-color: #3182F6; }
+.sum-card.is-me { border-color: #C0413A; }
 .sum-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .sum-row { display: flex; gap: 14px; font-size: 14px; color: #57606a; }
 .sum-row b { color: #1f2328; }
-.sum-left { margin-left: auto; color: #3182F6; }
-.sum-left b { color: #3182F6; }
+.sum-left { margin-left: auto; color: #C0413A; }
+.sum-left b { color: #C0413A; }
 
 /* 사용자 칩 */
 .who-chip { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 10px; }
@@ -336,10 +336,10 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 /* ── 홈 신원 선택 ────────────────────────────────────────────── */
 .whoami-pick { display: flex; gap: 10px; margin-top: 4px; }
 .whoami-btn {
-  flex: 1; padding: 15px 12px; border: 1px solid #E5E8EB; border-radius: 12px;
-  background: #fff; color: #4E5968; font-size: 16px; font-weight: 700; cursor: pointer;
+  flex: 1; padding: 15px 12px; border: 2px solid rgba(255,255,255,.55); border-radius: 12px;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
 }
-.whoami-btn.on { background: #3182F6; color: #fff; border-color: #3182F6; }
+.whoami-btn.on { background: #fff; color: #C0413A; border-color: #fff; }
 .whoami-pick.shake { animation: shake .4s; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
@@ -399,7 +399,7 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .hc-title { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hc-owner { font-size: 11px; font-weight: 700; white-space: nowrap; }
 .hc-empty { font-size: 13px; color: #8B95A1; padding: 8px 4px; text-align: center; }
-.hc-more { display: block; text-align: center; font-size: 12px; color: #3182F6; text-decoration: none; padding: 8px 4px 2px; font-weight: 600; }
+.hc-more { display: block; text-align: center; font-size: 12px; color: #C0413A; text-decoration: none; padding: 8px 4px 2px; font-weight: 600; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
 /* ══ 캘린더 페이지 ═══════════════════════════════════════════ */
@@ -410,15 +410,15 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 .cal-label { font-size: 18px; font-weight: 800; min-width: 96px; text-align: center; }
 .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: #8B95A1; padding: 4px 0; }
 .cal-weekdays .sun { color: #E5484D; }
-.cal-weekdays .sat { color: #3182F6; }
+.cal-weekdays .sat { color: #2563EB; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 .cal-cell { min-height: 56px; border-radius: 10px; padding: 5px 2px; background: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
 .cal-cell.empty { background: transparent; cursor: default; }
 .cal-num { font-size: 13px; color: #191F28; line-height: 1.4; }
 .cal-num.sun { color: #E5484D; }
-.cal-num.sat { color: #3182F6; }
-.cal-cell.today .cal-num { background: #3182F6; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.cal-cell.selected { outline: 2px solid #3182F6; }
+.cal-num.sat { color: #2563EB; }
+.cal-cell.today .cal-num { background: #C0413A; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.cal-cell.selected { outline: 2px solid #C0413A; }
 .cal-dots { display: flex; gap: 2px; margin-top: 4px; flex-wrap: wrap; justify-content: center; }
 
 .cal-legend { display: flex; gap: 16px; justify-content: center; font-size: 12px; color: #4E5968; margin: 16px 0 8px; }
@@ -426,8 +426,8 @@ body.home { background: #F2F4F6; min-height: 100vh; margin: 0; }
 
 .day-panel { margin-top: 8px; }
 .day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 15px; }
-.day-add { border: none; background: #3182F6; color: #fff; font-weight: 700; font-size: 13px; padding: 7px 13px; border-radius: 8px; cursor: pointer; }
-.ev-item { background: #fff; border-left: 4px solid #3182F6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.day-add { border: none; background: #C0413A; color: #fff; font-weight: 700; font-size: 13px; padding: 7px 13px; border-radius: 8px; cursor: pointer; }
+.ev-item { background: #fff; border-left: 4px solid #C0413A; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
 .ev-top { display: flex; align-items: center; gap: 8px; }
 .ev-owner { font-size: 11px; font-weight: 700; color: #fff; padding: 2px 8px; border-radius: 8px; }
 .ev-time { font-size: 12px; color: #8B95A1; }
@@ -472,7 +472,7 @@ input[type="time"]::-webkit-date-and-time-value { text-align: left; }
 .f-hint { font-weight: 400; color: #8B95A1; font-size: 12px; }
 
 /* ── 위시(가고싶은 곳) ───────────────────────────────────────── */
-.card .btn-visit { flex: 1; font-size: 12px; padding: 7px 8px; border: 1px solid #3182F6; background: #3182F6; color: #fff; border-radius: 7px; cursor: pointer; }
+.card .btn-visit { flex: 1; font-size: 12px; padding: 7px 8px; border: 1px solid #C0413A; background: #C0413A; color: #fff; border-radius: 7px; cursor: pointer; }
 .card .btn-wish { flex: 1; font-size: 12px; padding: 7px 8px; border: 1px solid #E64980; background: #fff; color: #E64980; border-radius: 7px; cursor: pointer; }
 .wish-pin { background: #fff; border-color: #E64980; }
 .wish-badge { background: #fff; color: #E64980; border: 1px solid #E64980; }
