@@ -84,14 +84,21 @@ app.post('/api/places', async (req, res) => {
     return res.status(400).json({ error: 'name, lat, lng 필요' });
   const status = req.body.status === 'wish' ? 'wish' : 'visited';
 
-  // 같은 이름+주소면 중복 저장 방지 (있으면 그대로 반환)
+  // 같은 이름+주소면 중복 저장 방지. 단, 상태(방문/위시)가 다르면 그 상태로 갱신
   const { data: existing } = await supabase
     .from('places')
     .select('*')
     .eq('name', name)
     .eq('address', address || '')
     .maybeSingle();
-  if (existing) return res.json(existing);
+  if (existing) {
+    if (existing.status !== status) {
+      const { data: updated } = await supabase
+        .from('places').update({ status }).eq('id', existing.id).select().single();
+      return res.json(updated || existing);
+    }
+    return res.json(existing);
+  }
 
   const { data, error } = await supabase
     .from('places')
