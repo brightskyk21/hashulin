@@ -109,6 +109,17 @@ app.post('/api/places', async (req, res) => {
   res.json(data);
 });
 
+// ── 전체 리뷰 모아보기 (가게명 포함) ──────────────────────────
+app.get('/api/reviews', async (req, res) => {
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*, places(name, status)')
+    .order('visited_on', { ascending: false })
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // ── 가게 상태 변경 (가고싶음 ↔ 방문) ──────────────────────────
 app.patch('/api/places/:id', async (req, res) => {
   const { status } = req.body;

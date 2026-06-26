@@ -503,3 +503,11 @@ input[type="time"]::-webkit-date-and-time-value { text-align: left; }
 .cp-tile img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
 .cp-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border: none; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 9px; cursor: pointer; }
 .cp-add { flex: 0 0 auto; width: 66px; aspect-ratio: 3 / 4; border: 1.5px dashed #c0c8d0; border-radius: 8px; background: #fff; color: #8B95A1; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* ── 상단 아이콘 버튼 + 리뷰 모아보기 ───────────────────────── */
+.icon-btn { border: none; background: rgba(255,255,255,.22); color: #fff; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn:hover { background: rgba(255,255,255,.35); }
+.ar-summary { font-size: 13px; color: #57606a; margin-top: 10px; }
+.ar-item { padding-top: 12px; }
+.ar-place { font-size: 14px; font-weight: 700; color: #C0413A; cursor: pointer; margin-bottom: 2px; }
+.ar-place:hover { text-decoration: underline; }

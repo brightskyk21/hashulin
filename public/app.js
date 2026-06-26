@@ -4,7 +4,6 @@ let markers = {};            // place.id -> naver.maps.Marker
 let sortMode = 'recent';     // 저장된 가게 정렬: recent | score
 let statusFilter = '전체';   // 가게 필터: 전체 | 방문 | 위시
 let sheetExpand = null;      // 모바일 바텀시트 펼치기 함수 (initSheet에서 주입)
-let reviewFilter = '전체';   // 리뷰 필터: 전체 | 민혁 | 하진
 let editingReviewId = null;  // 수정 중인 리뷰 id
 const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
 const meChip = document.getElementById('meChip');
@@ -191,14 +190,6 @@ async function openPanel(placeId) {
     .filter((t) => t && t !== '음식점');
   const tagHtml = tags.map((t) => `<span class="cat-tag">${escapeHtml(t)}</span>`).join('');
 
-  // 사용자별 리뷰 필터
-  const shownReviews = reviewFilter === '전체' ? reviews : reviews.filter((r) => r.reviewer === reviewFilter);
-  const filterHtml = reviews.length
-    ? `<div class="rfilter">${['전체', '민혁', '하진']
-        .map((f) => `<button class="rfilter-btn ${reviewFilter === f ? 'on' : ''}" data-f="${f}">${f}</button>`)
-        .join('')}</div>`
-    : '';
-
   const photoStrip = `
     <div class="photo-strip">
       ${(Array.isArray(photos) ? photos : []).map((ph) => `
@@ -255,9 +246,8 @@ async function openPanel(placeId) {
     </div>
 
     <div style="margin-top:14px">
-      ${filterHtml}
       <div id="reviewList">
-        ${shownReviews.map((r) => `
+        ${reviews.map((r) => `
           <div class="review-item">
             <div class="who">
               ${r.reviewer}
@@ -269,7 +259,7 @@ async function openPanel(placeId) {
               </span>
             </div>
             ${r.comment ? `<div class="cmt">${escapeHtml(r.comment)}</div>` : ''}
-          </div>`).join('') || `<div class="cat">${reviewFilter === '전체' ? '아직 평가가 없어요.' : '이 사람의 평가가 없어요.'}</div>`}
+          </div>`).join('') || '<div class="cat">아직 평가가 없어요.</div>'}
       </div>
     </div>`;
 
@@ -282,9 +272,6 @@ async function openPanel(placeId) {
   );
   body.querySelectorAll('.redit').forEach((btn) =>
     btn.addEventListener('click', () => openReviewEdit(reviews.find((r) => r.id === btn.dataset.id)))
-  );
-  body.querySelectorAll('.rfilter-btn').forEach((btn) =>
-    btn.addEventListener('click', () => { reviewFilter = btn.dataset.f; openPanel(placeId); })
   );
   const pin = body.querySelector('#photoInput');
   if (pin) pin.addEventListener('change', (e) => { if (e.target.files[0]) uploadPlacePhoto(placeId, e.target.files[0]); });
@@ -372,6 +359,40 @@ async function deletePlace(placeId) {
 document.getElementById('panelClose').addEventListener('click', () => {
   document.getElementById('panel').classList.add('hidden');
 });
+
+// ── 전체 리뷰 모아보기 (상단 통계 아이콘) ─────────────────────
+let allReviewFilter = '전체';
+async function openAllReviews() {
+  const reviews = await fetch('/api/reviews').then((r) => r.json()).catch(() => []);
+  const list = Array.isArray(reviews) ? reviews : [];
+  const shown = allReviewFilter === '전체' ? list : list.filter((r) => r.reviewer === allReviewFilter);
+  const avg = shown.length ? (shown.reduce((s, r) => s + Number(r.score), 0) / shown.length).toFixed(1) : '-';
+
+  const body = document.getElementById('panelBody');
+  body.innerHTML = `
+    <h2 style="margin-top:0">📊 리뷰 모아보기</h2>
+    <div class="rfilter">${['전체', '민혁', '하진']
+      .map((f) => `<button class="rfilter-btn ${allReviewFilter === f ? 'on' : ''}" data-f="${f}">${f}</button>`).join('')}</div>
+    <div class="ar-summary">총 <b>${shown.length}</b>개 · 평균 <b>${avg}</b>점</div>
+    <div style="margin-top:10px">
+      ${shown.map((r) => `
+        <div class="review-item ar-item">
+          <div class="ar-place" data-pid="${r.place_id}">${escapeHtml(r.places?.name || '(삭제된 가게)')}</div>
+          <div class="who">
+            ${r.reviewer}
+            <span class="badge" style="background:${scoreColor(Number(r.score))};font-size:11px">${Number(r.score).toFixed(1)}</span>
+            <span class="rdate">${r.visited_on || ''}</span>
+          </div>
+          ${r.comment ? `<div class="cmt">${escapeHtml(r.comment)}</div>` : ''}
+        </div>`).join('') || '<div class="cat">평가가 없어요.</div>'}
+    </div>`;
+
+  body.querySelectorAll('.rfilter-btn').forEach((b) =>
+    b.addEventListener('click', () => { allReviewFilter = b.dataset.f; openAllReviews(); }));
+  body.querySelectorAll('.ar-place[data-pid]').forEach((el) =>
+    el.addEventListener('click', () => { if (el.dataset.pid) openPanel(el.dataset.pid); }));
+  document.getElementById('panel').classList.remove('hidden');
+}
 
 function escapeHtml(s = '') {
   return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -477,7 +498,10 @@ document.querySelectorAll('.sort-btn').forEach((btn) =>
   })
 );
 
-// 가게 상태 필터 (전체/방문/가고싶음)
+// 상단 통계 아이콘 → 전체 리뷰 모아보기
+document.getElementById('statsBtn').addEventListener('click', openAllReviews);
+
+// 가게 상태 필터 (전체/방문/위시)
 document.querySelectorAll('.stf-btn').forEach((btn) =>
   btn.addEventListener('click', () => {
     statusFilter = btn.dataset.st;
