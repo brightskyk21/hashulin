@@ -188,15 +188,15 @@ header h1 { font-size: 18px; margin: 0; }
 @keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.8); opacity: 0; } }
 
 /* ── 홈(랜딩) 페이지 — 구글 스타일 ──────────────────────────── */
-body.home { background: #C0413A; min-height: 100vh; margin: 0; }
+body.home { background: #F7F8FA; min-height: 100vh; margin: 0; }
 .home-main {
   display: block; height: auto;
   max-width: 360px; margin: 0 auto; padding: 56px 24px 40px;
   text-align: center;
 }
-.home-hero { color: #fff; margin-bottom: 44px; }
+.home-hero { color: #191F28; margin-bottom: 44px; }
 .home-logo { font-size: 60px; line-height: 1; }
-.home-title { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -.5px; white-space: nowrap; }
+.home-title { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -.5px; white-space: nowrap; color: #C0413A; }
 .home-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
 .home-link-btn {
   display: block; background: #fff; color: #191F28;
@@ -336,10 +336,10 @@ body.home { background: #C0413A; min-height: 100vh; margin: 0; }
 /* ── 홈 신원 선택 ────────────────────────────────────────────── */
 .whoami-pick { display: flex; gap: 10px; margin-top: 4px; }
 .whoami-btn {
-  flex: 1; padding: 15px 12px; border: 2px solid rgba(255,255,255,.55); border-radius: 12px;
-  background: rgba(255,255,255,.12); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+  flex: 1; padding: 15px 12px; border: 1px solid #E5E8EB; border-radius: 12px;
+  background: #fff; color: #4E5968; font-size: 16px; font-weight: 700; cursor: pointer;
 }
-.whoami-btn.on { background: #fff; color: #C0413A; border-color: #fff; }
+.whoami-btn.on { background: #C0413A; color: #fff; border-color: #C0413A; }
 .whoami-pick.shake { animation: shake .4s; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
