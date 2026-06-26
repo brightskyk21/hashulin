@@ -10,8 +10,12 @@ create table if not exists places (
   link         text,            -- 네이버 상세 링크
   lat          double precision not null,
   lng          double precision not null,
+  status       text not null default 'visited' check (status in ('visited', 'wish')), -- 방문/위시
   created_at   timestamptz default now()
 );
+
+-- 주의: status 같은 컬럼을 나중에 추가하면, 아래 place_with_stats 뷰(p.*)에는
+--       자동 반영되지 않으므로 뷰를 반드시 다시 만들어줘야 함 (drop + create).
 
 -- 평가 테이블 (한 가게에 여러 명이 점수 가능)
 create table if not exists reviews (
