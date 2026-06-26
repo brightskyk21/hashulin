@@ -10,6 +10,9 @@ const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
 const meChip = document.getElementById('meChip');
 if (meChip) meChip.textContent = ME || '이름 선택 →';
 
+// 휴지통 아이콘 (삭제 버튼용)
+const TRASH_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
+
 // ── 점수 → 색 (개별 평가 배지용, 연속 색) ──────────────────────
 function scoreColor(score) {
   if (!score) return '#9ca3af';                  // 평가 없음: 회색
@@ -80,7 +83,7 @@ async function doSearch() {
       <div class="addr">${it.roadAddress || it.address || ''}</div>
       <div class="row" style="margin-top:8px;gap:6px">
         <button class="btn-visit">＋ 저장</button>
-        <button class="btn-wish">🤍 가고싶어요</button>
+        <button class="btn-wish">❤️ 가고싶어요</button>
       </div>`;
     el.querySelector('.btn-visit').addEventListener('click', (e) => { e.stopPropagation(); savePlace(it, 'visited'); });
     el.querySelector('.btn-wish').addEventListener('click', (e) => { e.stopPropagation(); savePlace(it, 'wish'); });
@@ -100,7 +103,7 @@ async function savePlace(it, status = 'visited') {
   await loadPlaces();
   openPanel(place.id);
   // 실제 저장된 상태 기준으로 피드백
-  toast(place.status === 'wish' ? '🤍 위시에 추가됐어요' : '저장됐어요 — 평가해보세요');
+  toast(place.status === 'wish' ? '❤️ 위시에 추가됐어요' : '저장됐어요 — 평가해보세요');
 }
 
 let toastTimer;
@@ -142,7 +145,7 @@ async function loadPlaces() {
       map,
       icon: {
         content: isWish
-          ? '<div class="map-pin wish-pin">🤍</div>'
+          ? '<div class="map-pin wish-pin">❤️</div>'
           : `<div class="map-pin" style="background:${b.bg}">${b.emoji || ''}</div>`,
         anchor: new naver.maps.Point(17, 17),
       },
@@ -156,10 +159,10 @@ async function loadPlaces() {
     el.innerHTML = `
       <div class="row">
         ${isWish
-          ? '<span class="badge wish-badge">🤍</span>'
+          ? '<span class="badge wish-badge">❤️</span>'
           : `<span class="badge" style="background:${b.bg};color:${b.fg}">${b.emoji ? b.emoji + ' ' : ''}${scoreText}</span>`}
         <span class="name" style="flex:1">${p.name}</span>
-        <span class="cat">${isWish ? '🤍 위시' : `(${p.review_count})`}</span>
+        <span class="cat">${isWish ? '❤️ 위시' : `(${p.review_count})`}</span>
       </div>
       <div class="addr">${p.road_address || p.address || ''}</div>`;
     el.addEventListener('click', () => {
@@ -217,12 +220,14 @@ async function openPanel(placeId) {
     ${photoStrip}
 
     ${p.status === 'wish'
-      ? `<div class="wish-banner">
-          <span>🤍 위시 (가고싶은 곳)</span>
-          <span class="wb-actions">
-            <button id="toVisited">✅ 방문함</button>
-            <button id="delPlace" class="ss-del">삭제</button>
-          </span>
+      ? `<div class="score-summary wish-summary">
+          <span class="ss-emoji wish-emoji">❤️</span>
+          <div class="ss-main">
+            <div class="wish-label">위시리스트</div>
+            <div class="ss-sub">가고싶은 곳</div>
+          </div>
+          <button id="toVisited" class="wb-visit">방문함</button>
+          <button id="delPlace" class="icon-del" title="삭제">${TRASH_SVG}</button>
         </div>`
       : `<div class="score-summary">
           <span class="ss-emoji" style="background:${b.bg};color:${b.fg}">${b.emoji || '–'}</span>
@@ -230,7 +235,7 @@ async function openPanel(placeId) {
             <div class="ss-score" style="color:${b.bg}">${avgText}<small>/ 10</small></div>
             <div class="ss-sub">평가 ${p.review_count}개 · 평균</div>
           </div>
-          <button id="delPlace" class="ss-del" title="가게 삭제">삭제</button>
+          <button id="delPlace" class="icon-del" title="가게 삭제">${TRASH_SVG}</button>
         </div>`}
 
     <div class="form">
