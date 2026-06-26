@@ -2,7 +2,8 @@
 let map;
 let markers = {};            // place.id -> naver.maps.Marker
 let sortMode = 'recent';     // 저장된 가게 정렬: recent | score
-let statusFilter = '전체';   // 가게 필터: 전체 | 방문 | 가고싶음
+let statusFilter = '전체';   // 가게 필터: 전체 | 방문 | 위시
+let sheetExpand = null;      // 모바일 바텀시트 펼치기 함수 (initSheet에서 주입)
 let reviewFilter = '전체';   // 리뷰 필터: 전체 | 민혁 | 하진
 let editingReviewId = null;  // 수정 중인 리뷰 id
 const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
@@ -86,6 +87,8 @@ async function doSearch() {
     el.addEventListener('click', () => highlight(it.lat, it.lng));
     box.appendChild(el);
   });
+  // 모바일: 검색하면 시트를 펼쳐서 결과가 보이게
+  if (sheetExpand && window.matchMedia('(max-width: 720px)').matches) sheetExpand();
 }
 
 async function savePlace(it, status = 'visited') {
@@ -107,7 +110,7 @@ async function loadPlaces() {
 
   // 상태 필터
   const list = places.filter((p) =>
-    statusFilter === '전체' ? true : statusFilter === '가고싶음' ? p.status === 'wish' : p.status !== 'wish'
+    statusFilter === '전체' ? true : statusFilter === '위시' ? p.status === 'wish' : p.status !== 'wish'
   );
 
   // 마커 갱신
@@ -144,7 +147,7 @@ async function loadPlaces() {
           ? '<span class="badge wish-badge">🤍</span>'
           : `<span class="badge" style="background:${b.bg};color:${b.fg}">${b.emoji ? b.emoji + ' ' : ''}${scoreText}</span>`}
         <span class="name" style="flex:1">${p.name}</span>
-        <span class="cat">${isWish ? '가고싶음' : `(${p.review_count})`}</span>
+        <span class="cat">${isWish ? '🤍 위시' : `(${p.review_count})`}</span>
       </div>
       <div class="addr">${p.road_address || p.address || ''}</div>`;
     el.addEventListener('click', () => {
@@ -203,7 +206,7 @@ async function openPanel(placeId) {
 
     ${p.status === 'wish'
       ? `<div class="wish-banner">
-          <span>🤍 가고싶은 곳</span>
+          <span>🤍 위시 (가고싶은 곳)</span>
           <span class="wb-actions">
             <button id="toVisited">✅ 방문함</button>
             <button id="delPlace" class="ss-del">삭제</button>
@@ -414,6 +417,7 @@ function initSheet() {
   };
   const expand = () => apply(0, true);
   const collapse = () => apply(collapsedY(), true);
+  sheetExpand = expand;   // doSearch 등에서 호출할 수 있게 노출
 
   const reset = () => {
     if (isMobile()) collapse();
