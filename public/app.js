@@ -363,23 +363,26 @@ function initSheet() {
     else { sheet.style.transform = ''; sheet.style.transition = ''; }
   };
 
-  handle.addEventListener('touchstart', (e) => {
+  // pointer 이벤트로 마우스·터치 모두 지원
+  handle.addEventListener('pointerdown', (e) => {
     if (!isMobile()) return;
-    dragging = true; startTouchY = e.touches[0].clientY; startCurY = curY;
+    dragging = true; startTouchY = e.clientY; startCurY = curY;
     sheet.style.transition = 'none';
-  }, { passive: true });
-  handle.addEventListener('touchmove', (e) => {
+    handle.setPointerCapture(e.pointerId);
+  });
+  handle.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    const dy = e.touches[0].clientY - startTouchY;
+    const dy = e.clientY - startTouchY;
     apply(Math.min(collapsedY(), Math.max(0, startCurY + dy)), false);
-    e.preventDefault();
-  }, { passive: false });
-  handle.addEventListener('touchend', () => {
+  });
+  const endDrag = () => {
     if (!dragging) return; dragging = false;
     const moved = Math.abs(curY - startCurY);
-    if (moved < 6) (curY > collapsedY() / 2 ? expand() : collapse());   // 탭 → 토글
+    if (moved < 6) (curY > collapsedY() / 2 ? expand() : collapse());   // 탭/클릭 → 토글
     else (curY < collapsedY() / 2 ? expand() : collapse());            // 드래그 → 가까운 쪽
-  });
+  };
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
 
   window.addEventListener('resize', reset);
   reset();
