@@ -68,6 +68,7 @@ app.post('/api/places', async (req, res) => {
   const { name, category, address, roadAddress, link, lat, lng } = req.body;
   if (!name || lat == null || lng == null)
     return res.status(400).json({ error: 'name, lat, lng 필요' });
+  const status = req.body.status === 'wish' ? 'wish' : 'visited';
 
   // 같은 이름+주소면 중복 저장 방지 (있으면 그대로 반환)
   const { data: existing } = await supabase
@@ -80,9 +81,19 @@ app.post('/api/places', async (req, res) => {
 
   const { data, error } = await supabase
     .from('places')
-    .insert({ name, category, address, road_address: roadAddress, link, lat, lng })
+    .insert({ name, category, address, road_address: roadAddress, link, lat, lng, status })
     .select()
     .single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// ── 가게 상태 변경 (가고싶음 ↔ 방문) ──────────────────────────
+app.patch('/api/places/:id', async (req, res) => {
+  const { status } = req.body;
+  if (!['visited', 'wish'].includes(status))
+    return res.status(400).json({ error: 'status는 visited/wish' });
+  const { data, error } = await supabase.from('places').update({ status }).eq('id', req.params.id).select().single();
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
@@ -123,6 +134,8 @@ app.post('/api/places/:id/reviews', async (req, res) => {
 
   const { data, error } = await supabase.from('reviews').insert(row).select().single();
   if (error) return res.status(500).json({ error: error.message });
+  // 평가가 생기면 '가고싶음' → '방문함' 자동 전환
+  await supabase.from('places').update({ status: 'visited' }).eq('id', req.params.id);
   res.json(data);
 });
 

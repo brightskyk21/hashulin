@@ -2,6 +2,7 @@
 let map;
 let markers = {};            // place.id -> naver.maps.Marker
 let sortMode = 'recent';     // 저장된 가게 정렬: recent | score
+let statusFilter = '전체';   // 가게 필터: 전체 | 방문 | 가고싶음
 let reviewFilter = '전체';   // 리뷰 필터: 전체 | 민혁 | 하진
 let editingReviewId = null;  // 수정 중인 리뷰 id
 const ME = localStorage.getItem('whoami') || '';   // 홈에서 선택한 신원
@@ -76,24 +77,22 @@ async function doSearch() {
       <div class="name">${it.name}</div>
       <div class="cat">${it.category || ''}</div>
       <div class="addr">${it.roadAddress || it.address || ''}</div>
-      <div class="row" style="margin-top:6px">
-        <span></span>
-        <button>＋ 저장</button>
+      <div class="row" style="margin-top:8px;gap:6px">
+        <button class="btn-visit">＋ 저장</button>
+        <button class="btn-wish">🤍 가고싶어요</button>
       </div>`;
-    el.querySelector('button').addEventListener('click', async (e) => {
-      e.stopPropagation();
-      await savePlace(it);
-    });
+    el.querySelector('.btn-visit').addEventListener('click', (e) => { e.stopPropagation(); savePlace(it, 'visited'); });
+    el.querySelector('.btn-wish').addEventListener('click', (e) => { e.stopPropagation(); savePlace(it, 'wish'); });
     el.addEventListener('click', () => highlight(it.lat, it.lng));
     box.appendChild(el);
   });
 }
 
-async function savePlace(it) {
+async function savePlace(it, status = 'visited') {
   const place = await fetch('/api/places', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(it),
+    body: JSON.stringify({ ...it, status }),
   }).then((r) => r.json());
   await loadPlaces();
   openPanel(place.id);
@@ -106,21 +105,30 @@ async function loadPlaces() {
   // 평점순 정렬 (최신순은 서버 기본 순서 유지)
   if (sortMode === 'score') places.sort((a, b) => Number(b.avg_score) - Number(a.avg_score));
 
+  // 상태 필터
+  const list = places.filter((p) =>
+    statusFilter === '전체' ? true : statusFilter === '가고싶음' ? p.status === 'wish' : p.status !== 'wish'
+  );
+
   // 마커 갱신
   Object.values(markers).forEach((m) => m.setMap(null));
   markers = {};
 
   const listBox = document.getElementById('placeList');
   listBox.innerHTML = '';
+  if (!list.length) listBox.innerHTML = '<div class="cat" style="padding:8px 2px">표시할 가게가 없어요.</div>';
 
-  places.forEach((p) => {
+  list.forEach((p) => {
+    const isWish = p.status === 'wish';
     const b = scoreBand(p.avg_score);
     const scoreText = Number(p.avg_score) ? Number(p.avg_score).toFixed(1) : '·';
     const marker = new naver.maps.Marker({
       position: new naver.maps.LatLng(p.lat, p.lng),
       map,
       icon: {
-        content: `<div class="map-pin" style="background:${b.bg}">${b.emoji || ''}</div>`,
+        content: isWish
+          ? '<div class="map-pin wish-pin">🤍</div>'
+          : `<div class="map-pin" style="background:${b.bg}">${b.emoji || ''}</div>`,
         anchor: new naver.maps.Point(17, 17),
       },
     });
@@ -132,9 +140,11 @@ async function loadPlaces() {
     el.className = 'card';
     el.innerHTML = `
       <div class="row">
-        <span class="badge" style="background:${b.bg};color:${b.fg}">${b.emoji ? b.emoji + ' ' : ''}${scoreText}</span>
+        ${isWish
+          ? '<span class="badge wish-badge">🤍</span>'
+          : `<span class="badge" style="background:${b.bg};color:${b.fg}">${b.emoji ? b.emoji + ' ' : ''}${scoreText}</span>`}
         <span class="name" style="flex:1">${p.name}</span>
-        <span class="cat">(${p.review_count})</span>
+        <span class="cat">${isWish ? '가고싶음' : `(${p.review_count})`}</span>
       </div>
       <div class="addr">${p.road_address || p.address || ''}</div>`;
     el.addEventListener('click', () => {
@@ -178,14 +188,22 @@ async function openPanel(placeId) {
       ${p.link ? `<a class="naver-link" href="${p.link}" target="_blank">네이버에서 보기 ↗</a>` : ''}
     </div>
 
-    <div class="score-summary">
-      <span class="ss-emoji" style="background:${b.bg};color:${b.fg}">${b.emoji || '–'}</span>
-      <div class="ss-main">
-        <div class="ss-score" style="color:${b.bg}">${avgText}<small>/ 10</small></div>
-        <div class="ss-sub">평가 ${p.review_count}개 · 평균</div>
-      </div>
-      <button id="delPlace" class="ss-del" title="가게 삭제">삭제</button>
-    </div>
+    ${p.status === 'wish'
+      ? `<div class="wish-banner">
+          <span>🤍 가고싶은 곳</span>
+          <span class="wb-actions">
+            <button id="toVisited">✅ 방문함</button>
+            <button id="delPlace" class="ss-del">삭제</button>
+          </span>
+        </div>`
+      : `<div class="score-summary">
+          <span class="ss-emoji" style="background:${b.bg};color:${b.fg}">${b.emoji || '–'}</span>
+          <div class="ss-main">
+            <div class="ss-score" style="color:${b.bg}">${avgText}<small>/ 10</small></div>
+            <div class="ss-sub">평가 ${p.review_count}개 · 평균</div>
+          </div>
+          <button id="delPlace" class="ss-del" title="가게 삭제">삭제</button>
+        </div>`}
 
     <div class="form">
       <label>방문 날짜</label>
@@ -224,6 +242,8 @@ async function openPanel(placeId) {
 
   body.querySelector('#addReview').addEventListener('click', () => addReview(placeId));
   body.querySelector('#delPlace').addEventListener('click', () => deletePlace(placeId));
+  const toV = body.querySelector('#toVisited');
+  if (toV) toV.addEventListener('click', () => convertToVisited(placeId));
   body.querySelectorAll('.rdel').forEach((btn) =>
     btn.addEventListener('click', () => deleteReview(btn.dataset.id, placeId))
   );
@@ -247,6 +267,16 @@ async function openPanel(placeId) {
   updateScore();
 
   document.getElementById('panel').classList.remove('hidden');
+}
+
+async function convertToVisited(placeId) {
+  await fetch(`/api/places/${placeId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'visited' }),
+  });
+  await loadPlaces();
+  openPanel(placeId);
 }
 
 async function deleteReview(reviewId, placeId) {
@@ -360,6 +390,15 @@ document.querySelectorAll('.sort-btn').forEach((btn) =>
   btn.addEventListener('click', () => {
     sortMode = btn.dataset.sort;
     document.querySelectorAll('.sort-btn').forEach((b) => b.classList.toggle('on', b === btn));
+    loadPlaces();
+  })
+);
+
+// 가게 상태 필터 (전체/방문/가고싶음)
+document.querySelectorAll('.stf-btn').forEach((btn) =>
+  btn.addEventListener('click', () => {
+    statusFilter = btn.dataset.st;
+    document.querySelectorAll('.stf-btn').forEach((b) => b.classList.toggle('on', b === btn));
     loadPlaces();
   })
 );
