@@ -609,6 +609,7 @@
 </dialog>
 
     <dialog id="eventDialog" aria-labelledby="eventFormTitle">
+  <div class="event-sheet-handle" aria-hidden="true"></div>
   <div class="dialog-head">
     <h2 id="eventFormTitle">일정 추가</h2>
     <button data-close aria-label="일정 닫기">
@@ -627,24 +628,70 @@
     </button>
   </div>
   <form id="eventForm">
-    <label>제목<input name="title" required maxlength="100" /></label>
-    <div class="form-pair">
-      <label>시작 날짜<input name="date" type="date" required /></label
-      ><label>종료 날짜<input name="endDate" type="date" /></label>
+    <input
+      class="event-title-input"
+      aria-label="제목"
+      name="title"
+      placeholder="일정 제목"
+      required
+      maxlength="100"
+    />
+    <div class="event-sheet-context">
+      <label class="event-label-chip">
+        <span aria-hidden="true"></span>
+        <input
+          aria-label="일정 구분"
+          name="owner"
+          maxlength="40"
+          list="eventLabels"
+          value="모임"
+        />
+      </label>
+      <datalist id="eventLabels"></datalist>
+      <span id="eventGroupName"></span>
     </div>
-    <div class="form-pair">
-      <label>시작 시간<input name="startTime" type="time" /></label
-      ><label>종료 시간<input name="endTime" type="time" /></label>
+    <label class="event-all-day">
+      <span>종일</span><input name="allDay" type="checkbox" role="switch" />
+    </label>
+    <div class="event-date-columns">
+      <div class="event-date-column">
+        <span class="event-field-label">시작</span>
+        <label class="event-picker">
+          <span data-event-value="date" aria-hidden="true">날짜 선택</span>
+          <input name="date" aria-label="시작 날짜" type="date" required />
+        </label>
+        <label class="event-picker event-time-picker">
+          <span data-event-value="startTime" aria-hidden="true">시간 선택</span>
+          <input name="startTime" aria-label="시작 시간" type="time" />
+        </label>
+      </div>
+      <div class="event-date-column">
+        <span class="event-field-label">종료</span>
+        <label class="event-picker">
+          <span data-event-value="endDate" aria-hidden="true">같은 날</span>
+          <input
+            name="endDate"
+            aria-label="종료 날짜 (미입력 시 같은 날)"
+            type="date"
+          />
+        </label>
+        <label class="event-picker event-time-picker">
+          <span data-event-value="endTime" aria-hidden="true">시간 선택</span>
+          <input name="endTime" aria-label="종료 시간 (선택)" type="time" />
+        </label>
+      </div>
     </div>
-    <p class="note">시간 미입력 시 종일 일정으로 저장됩니다.</p>
-    <label
-      >일정 구분<input name="owner" maxlength="40" list="eventLabels" value="모임" /><datalist
-        id="eventLabels"
-      ></datalist></label
-    ><label>메모<textarea name="memo" maxlength="2000" rows="3"></textarea></label>
+    <label class="event-memo-label"
+      >메모<textarea
+        name="memo"
+        placeholder="메모 추가"
+        maxlength="2000"
+        rows="3"
+      ></textarea>
+    </label>
     <div class="event-form-actions">
-      <button id="deleteEvent" type="button" hidden>일정 취소</button
-      ><button class="primary">저장</button>
+      <button class="primary" type="submit">저장</button>
+      <button id="deleteEvent" type="button" hidden>일정 취소</button>
     </div>
   </form>
 </dialog>

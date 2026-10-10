@@ -293,15 +293,6 @@
   font-size: 11px;
   color: var(--muted);
 }
-.event-form-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-.event-form-actions > button:last-child {
-  margin-left: auto;
-}
 @media (max-width: 1000px) {
   .workspace-calendar {
     grid-template-columns: 1fr;

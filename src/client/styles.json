@@ -6,6 +6,7 @@
   "scores/styles.css",
   "photos/styles.css",
   "calendar/styles.css",
+  "calendar/editor.css",
   "map/styles.css",
   "places/styles.css",
   "reviews/styles.css",

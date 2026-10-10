@@ -10,6 +10,9 @@ function openEvent(event = null) {
   f.elements.endTime.value = event?.end_time?.slice(0, 5) || '';
   f.elements.owner.value = event?.owner_label || '모임';
   f.elements.memo.value = event?.memo || '';
+  f.elements.allDay.checked = !f.elements.startTime.value && !f.elements.endTime.value;
+  $('#eventGroupName').textContent = groups.find((group) => group.id === groupId)?.name || '';
+  syncEventInputs();
   $('#eventLabels').innerHTML = [
     ...new Set([
       '모임',
@@ -25,8 +28,46 @@ function openEvent(event = null) {
   showDialog('#eventDialog');
 }
 
+function syncEventInputs() {
+  const f = $('#eventForm');
+  for (const name of ['startTime', 'endTime']) {
+    const input = f.elements[name];
+    input.disabled = f.elements.allDay.checked;
+    input.closest('.event-time-picker').hidden = input.disabled;
+  }
+  f.querySelectorAll('[data-event-value]').forEach((label) => {
+    const name = label.dataset.eventValue;
+    const value = f.elements[name].value;
+    const isDate = name === 'date' || name === 'endDate';
+    label.textContent = value
+      ? isDate
+        ? value.slice(2).replaceAll('-', '. ') + '.'
+        : value
+      : name === 'endDate'
+        ? '같은 날'
+        : isDate
+          ? '날짜 선택'
+          : '시간 선택';
+    label.classList.toggle('is-empty', !value);
+  });
+}
+
 function initCalendarEditor() {
   $('#addEvent').onclick = () => openEvent();
+  $('#eventForm').addEventListener('input', syncEventInputs);
+  $('#eventForm').addEventListener('change', syncEventInputs);
+  $('#eventForm')
+    .querySelectorAll('.event-picker input')
+    .forEach((input) => {
+      input.addEventListener('click', () => {
+        // Keep the native date/time picker and keyboard editing on every platform.
+        try {
+          input.showPicker?.();
+        } catch {
+          /* Native input remains editable. */
+        }
+      });
+    });
 
   $('#eventForm').onsubmit = (e) => {
     e.preventDefault();
@@ -42,8 +83,8 @@ function initCalendarEditor() {
           title: f.get('title').trim(),
           date: f.get('date'),
           endDate: f.get('endDate'),
-          startTime: f.get('startTime'),
-          endTime: f.get('endTime'),
+          startTime: f.get('startTime') || '',
+          endTime: f.get('endTime') || '',
           owner: f.get('owner').trim(),
           memo: f.get('memo').trim(),
         }),
