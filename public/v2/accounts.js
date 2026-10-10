@@ -27,7 +27,26 @@ $('#profileForm').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{awa
 $('#groupForm').onsubmit=e=>{e.preventDefault();busy(e.submitter,async()=>{groupId=await api('/groups',{method:'POST',body:JSON.stringify({name:$('#groupName').value.trim()})});$('#groupName').value='';await loadAccount();$('#groupDialog').close();status('모임을 만들었습니다.');});};
 $('#join').onclick=()=>busy($('#join'),async()=>{groupId=await api('/groups/join',{method:'POST',body:JSON.stringify({token:inviteToken})});inviteToken=null;sessionStorage.removeItem('hashulin.pendingInvite');history.replaceState({},'',location.pathname);await loadAccount();$('#groupDialog').close();status('모임에 참여했습니다.');});
 $('#discardInvite').onclick=()=>{sessionStorage.removeItem('hashulin.pendingInvite');inviteToken=null;$('#invitePreview').textContent='';$('#join').hidden=true;$('#discardInvite').hidden=true;status('초대를 닫았습니다.');};
-$('#copyInvite').onclick=()=>busy($('#copyInvite'),async()=>{try{await navigator.clipboard.writeText($('#inviteLink').value);status('초대 링크를 복사했습니다.');}catch(_){$('#inviteLink').select();status('초대 링크를 선택했습니다. 복사해서 전달해주세요.');}});
+async function copyInviteLink(){
+ const field=$('#inviteLink');if(!field.value)return;
+ try{await navigator.clipboard.writeText(field.value);$('#inviteMessage').textContent='복사했어요. 초대할 사람에게 링크를 보내주세요.';$('#copyInvite').textContent='복사 완료';}
+ catch(_){field.focus();field.select();field.setSelectionRange(0,field.value.length);$('#inviteMessage').textContent='자동 복사가 지원되지 않아요. 선택된 주소를 길게 눌러 복사해주세요.';}
+}
+$('#copyInvite').onclick=()=>busy($('#copyInvite'),copyInviteLink);
+async function createInvite(button){
+ const target=button.dataset.invite,actor=session?.user.id;
+ const box=$('#inviteBox'),copy=$('#copyInvite');
+ box.hidden=false;$('#inviteLink').value='';copy.disabled=true;copy.textContent='링크 복사';
+ $('#inviteHeading').textContent=(groups.find(g=>g.id===target)?.name||'모임')+' 초대';
+ $('#inviteMessage').textContent='초대 링크를 만들고 있어요…';box.scrollIntoView({block:'center',behavior:'smooth'});
+ try{
+  const token=await api(`/groups/${target}/invites`,{method:'POST'});
+  if(session?.user.id!==actor||!groups.some(g=>g.id===target))return;
+  $('#inviteLink').value=location.origin+'/v2/#invite='+encodeURIComponent(token);
+  $('#inviteMessage').textContent='링크가 준비됐어요. 아래 버튼으로 복사해서 보내주세요.';
+  copy.disabled=false;copy.focus({preventScroll:true});box.scrollIntoView({block:'center',behavior:'smooth'});
+ }catch(error){$('#inviteMessage').textContent=error.message||'초대 링크를 만들지 못했어요. 다시 시도해주세요.';box.scrollIntoView({block:'center',behavior:'smooth'});}
+}
 $('#groupSelect').onchange=()=>chooseGroup($('#groupSelect').value).catch(e=>status(e.message));
 for(const id of ['groupNav','mobileGroups'])$('#'+id).onclick=()=>showDialog('#groupDialog');
 for(const id of ['journalNav','mobileJournal'])$('#'+id).onclick=()=>loadVisits().catch(e=>status(e.message));
@@ -36,7 +55,7 @@ function clearAccount(){++loadVersion;session=null;profile=null;groups=[];member
 async function logout(button){await busy(button,async()=>{const {error}=await client.auth.signOut({scope:'local'});if(error)throw error;clearAccount();status('로그아웃했습니다.');});}
 $('#logout').onclick=()=>logout($('#logout'));$('#mobileLogout').onclick=()=>logout($('#mobileLogout'));
 $('#kakao').onclick=()=>busy($('#kakao'),async()=>{const {error}=await client.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+'/v2/',queryParams:{scope:'profile_nickname'}}});if(error)throw error;});
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-close')){const dialog=b.closest('dialog');if(dialog.id==='reviewDialog'&&reviewDirty()&&!confirm('작성 중인 내용을 닫을까요? 저장하지 않은 내용은 사라집니다.'))return;dialog.close();}if(b.hasAttribute('data-manage'))showDialog('#groupDialog');if(b.hasAttribute('data-compose'))compose();if(b.hasAttribute('data-filter')){filter=b.dataset.filter;archiveLimit=24;refreshJournal().catch(e=>status(e.message));}if(b.dataset.review)compose(visits.find(v=>v.id===b.dataset.review));if(b.hasAttribute('data-retry'))busy(b,loadVisits);if(b.dataset.group)busy(b,async()=>{await chooseGroup(b.dataset.group);$('#groupDialog').close();});if(b.dataset.invite)busy(b,async()=>{const token=await api(`/groups/${b.dataset.invite}/invites`,{method:'POST'});$('#inviteLink').value=location.origin+'/v2/#invite='+encodeURIComponent(token);$('#inviteBox').hidden=false;status('새 링크를 만들었습니다. 이전 초대 링크는 사용할 수 없습니다.');});if(b.dataset.revoke)busy(b,async()=>{await api(`/groups/${b.dataset.revoke}/invites`,{method:'DELETE'});$('#inviteBox').hidden=true;$('#inviteLink').value='';status('아직 사용하지 않은 초대 링크를 취소했습니다.');});});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-close')){const dialog=b.closest('dialog');if(dialog.id==='reviewDialog'&&reviewDirty()&&!confirm('작성 중인 내용을 닫을까요? 저장하지 않은 내용은 사라집니다.'))return;dialog.close();}if(b.hasAttribute('data-manage'))showDialog('#groupDialog');if(b.hasAttribute('data-compose'))compose();if(b.hasAttribute('data-filter')){filter=b.dataset.filter;archiveLimit=24;refreshJournal().catch(e=>status(e.message));}if(b.dataset.review)compose(visits.find(v=>v.id===b.dataset.review));if(b.hasAttribute('data-retry'))busy(b,loadVisits);if(b.dataset.group)busy(b,async()=>{await chooseGroup(b.dataset.group);$('#groupDialog').close();});if(b.dataset.invite)busy(b,()=>createInvite(b));if(b.dataset.revoke)busy(b,async()=>{await api(`/groups/${b.dataset.revoke}/invites`,{method:'DELETE'});$('#inviteBox').hidden=true;$('#inviteLink').value='';status('아직 사용하지 않은 초대 링크를 취소했습니다.');});});
 (async()=>{try{const config=await fetch('/api/v2/config').then(r=>r.json());if(!config.ready){$('#setup').textContent='로그인 연결을 준비 중입니다.';return;}mapClientId=config.naverMapClientId;storageOrigin=new URL(config.supabaseUrl).origin;client=supabase.createClient(config.supabaseUrl,config.publicKey,{auth:{flowType:'pkce',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});const {data,error}=await client.auth.getSession();if(error)throw error;session=data.session;$('#setup').textContent='';$('#kakao').disabled=false;if(params.has('error'))status('카카오 로그인에 실패했습니다. 다시 시도해주세요.');if(params.has('code')||params.has('error'))history.replaceState({},'',location.pathname);client.auth.onAuthStateChange(handleAuthChange);$('#login').hidden=!!session;$('#app').hidden=!session;if(session)await loadAccount();}catch(e){status(e.message);$('#setup').textContent='설정을 확인한 뒤 새로고침해주세요.';}})();
 
 function reviewDirty(){const f=$('#reviewForm');return Number(f.elements.score.value)!==Number(editing?.h_reviews.find(r=>r.author_id===session?.user.id)?.score??8)|| f.elements.comment.value!== (editing?.h_reviews.find(r=>r.author_id===session?.user.id)?.comment||'')||(!editing&&!!f.elements.placeName.value.trim());}
