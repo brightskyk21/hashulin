@@ -33,7 +33,13 @@ let workspace = { places: [], media: [], events: [] },
   editingEvent = null,
   cancelledEvents = false;
 
-const viewNames = { journal: '리뷰', map: '지도', gallery: '사진', calendar: '일정' };
+const viewNames = {
+  journal: '리뷰',
+  map: '지도',
+  gallery: '사진',
+  calendar: '일정',
+  labs: '실험실',
+};
 
 let visitNext = null,
   archiveLimit = 24,

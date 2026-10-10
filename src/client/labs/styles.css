@@ -1,0 +1,14 @@
+.labs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 45vh;
+  gap: 18px;
+  color: #9aa69e;
+}
+.labs-empty p {
+  margin: 0;
+  font-size: 14px;
+  color: #89958d;
+}

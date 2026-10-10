@@ -41,3 +41,4 @@ initGroupsInvitesActions();
 initGroupsSettingsNavigation();
 initReviewsDetail();
 initReviewsComposer();
+initReviewsSort();

@@ -1,5 +1,6 @@
 function setView(view) {
   currentView = view;
+  setJournalSortMenu(false);
   for (const name of Object.keys(viewNames)) {
     $('#' + name + 'View').hidden = name !== view;
     const nav = $('#' + name + 'Nav');
@@ -26,7 +27,7 @@ function initCoreNavigationControls() {
 }
 
 function initCoreNavigationActions() {
-  for (const name of ['map', 'gallery', 'calendar'])
+  for (const name of ['map', 'gallery', 'calendar', 'labs'])
     for (const prefix of ['', 'mobile']) {
       const id = prefix ? prefix + name[0].toUpperCase() + name.slice(1) : name + 'Nav';
       $('#' + id).onclick = () => setView(name);

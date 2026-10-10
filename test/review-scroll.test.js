@@ -17,6 +17,8 @@ function setup({ count = 24, next = 'page2' } = {}) {
     groupId: 'group',
     filter: '',
     currentView: 'journal',
+    journalSort: 'latest',
+    updateJournalSortControls() {},
     journalRequest: 0,
     journalLimit: 24,
     visitNext: next,
@@ -113,4 +115,20 @@ test('review sentinel ignores other tabs and repeated cursors expose a retry', a
   await request;
   assert.equal(h.elements['#moreVisits'].hidden, false);
   assert.equal(h.context.journalLimit, 24);
+});
+
+test('non-latest orders load every cursor page before sorting, latest stays incremental', async () => {
+  const h = setup({ count: 48 });
+  h.context.journalSort = 'highest';
+  const load = h.context.ensureJournalPage();
+  assert.equal(h.pending.length, 1);
+  h.pending[0].resolve({ items: [{ id: '48' }], next: 'page3' });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(h.pending.length, 2);
+  h.pending[1].resolve({ items: [{ id: '49' }], next: null });
+  await load;
+  assert.equal(h.context.visits.length, 50);
+  const latest = setup({ count: 48 });
+  await latest.context.ensureJournalPage();
+  assert.equal(latest.pending.length, 0);
 });

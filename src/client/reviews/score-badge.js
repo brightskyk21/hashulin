@@ -3,7 +3,7 @@ function journalScoreBadge(row) {
     .map((r) => Number(r.score))
     .filter((s) => Number.isFinite(s) && s >= 1 && s <= 10);
   if (!scores.length) return '';
-  const average = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+  const average = journalAverage(row);
   const [emoji, mood, ink] = band(average),
     image = journalEmojiImage(emoji);
   const label = `${filter ? '내 점수' : '평균'} ${Number(average.toFixed(2))} · 리뷰 ${scores.length}개`;

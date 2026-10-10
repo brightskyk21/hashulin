@@ -63,5 +63,34 @@ function ownLegacyReview(archive, places, user, placeId, date, name = '', addres
 }
 
 function journalRows() {
-  return buildJournalRows(visits, archive, workspace.places, filter, visitNext);
+  return sortJournalRows(
+    buildJournalRows(visits, archive, workspace.places, filter, visitNext),
+    journalSort,
+  );
+}
+
+function journalAverage(row) {
+  const scores = row.reviews
+    .map((review) => Number(review.score))
+    .filter((score) => Number.isFinite(score) && score >= 1 && score <= 10);
+  return scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null;
+}
+
+function sortJournalRows(rows, order = 'latest') {
+  const latest = (a, b) =>
+    String(b.date || '').localeCompare(String(a.date || '')) || a.key.localeCompare(b.key);
+  return [...rows].sort((a, b) => {
+    if (order === 'oldest') {
+      if (!a.date || !b.date) return a.date ? -1 : b.date ? 1 : a.key.localeCompare(b.key);
+      return a.date.localeCompare(b.date) || a.key.localeCompare(b.key);
+    }
+    if (order === 'highest' || order === 'lowest') {
+      const left = journalAverage(a),
+        right = journalAverage(b);
+      if (left === null || right === null)
+        return left === null ? (right === null ? latest(a, b) : 1) : -1;
+      return (order === 'highest' ? right - left : left - right) || latest(a, b);
+    }
+    return latest(a, b);
+  });
 }

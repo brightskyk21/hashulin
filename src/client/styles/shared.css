@@ -1389,7 +1389,8 @@ button:disabled {
 }
 @media (max-width: 760px) {
   .mobile-nav button {
-    padding: 8px 10px;
+    flex: 1;
+    padding: 8px 4px;
     font-size: 11px;
     min-width: 0;
   }

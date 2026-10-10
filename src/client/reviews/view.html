@@ -1,5 +1,38 @@
 <section id="journalView">
-  <section class="page-head"><h1>리뷰</h1></section>
+  <section class="page-head journal-heading">
+    <h1>리뷰</h1>
+    <div class="review-sort">
+      <button
+        id="reviewSortToggle"
+        class="review-sort-toggle"
+        type="button"
+        aria-label="정렬: 최신순"
+        title="최신순"
+        aria-expanded="false"
+        aria-controls="reviewSortMenu"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 4v16m-4-4 4 4 4-4M16 20V4m-4 4 4-4 4 4" />
+        </svg>
+      </button>
+      <div id="reviewSortMenu" class="review-sort-menu" role="group" aria-label="리뷰 정렬" hidden>
+        <button type="button" data-journal-sort="latest" aria-pressed="true">최신순</button>
+        <button type="button" data-journal-sort="oldest" aria-pressed="false">오래된순</button>
+        <button type="button" data-journal-sort="highest" aria-pressed="false">평점 높은순</button>
+        <button type="button" data-journal-sort="lowest" aria-pressed="false">평점 낮은순</button>
+      </div>
+    </div>
+  </section>
   <div class="filter-bar" id="filters"></div>
   <div id="records"></div>
   <div class="journal-pagination" id="journalSentinel">

@@ -45,7 +45,13 @@ let workspace = { places: [], media: [], events: [] },
   editingEvent = null,
   cancelledEvents = false;
 
-const viewNames = { journal: '리뷰', map: '지도', gallery: '사진', calendar: '일정' };
+const viewNames = {
+  journal: '리뷰',
+  map: '지도',
+  gallery: '사진',
+  calendar: '일정',
+  labs: '실험실',
+};
 
 let visitNext = null,
   archiveLimit = 24,
@@ -159,7 +165,126 @@ function ownLegacyReview(archive, places, user, placeId, date, name = '', addres
 }
 
 function journalRows() {
-  return buildJournalRows(visits, archive, workspace.places, filter, visitNext);
+  return sortJournalRows(
+    buildJournalRows(visits, archive, workspace.places, filter, visitNext),
+    journalSort,
+  );
+}
+
+function journalAverage(row) {
+  const scores = row.reviews
+    .map((review) => Number(review.score))
+    .filter((score) => Number.isFinite(score) && score >= 1 && score <= 10);
+  return scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null;
+}
+
+function sortJournalRows(rows, order = 'latest') {
+  const latest = (a, b) =>
+    String(b.date || '').localeCompare(String(a.date || '')) || a.key.localeCompare(b.key);
+  return [...rows].sort((a, b) => {
+    if (order === 'oldest') {
+      if (!a.date || !b.date) return a.date ? -1 : b.date ? 1 : a.key.localeCompare(b.key);
+      return a.date.localeCompare(b.date) || a.key.localeCompare(b.key);
+    }
+    if (order === 'highest' || order === 'lowest') {
+      const left = journalAverage(a),
+        right = journalAverage(b);
+      if (left === null || right === null)
+        return left === null ? (right === null ? latest(a, b) : 1) : -1;
+      return (order === 'highest' ? right - left : left - right) || latest(a, b);
+    }
+    return latest(a, b);
+  });
+}
+
+;
+/* Source: reviews/sort.js */
+let journalSort = 'latest';
+const journalSortLabels = {
+  latest: '최신순',
+  oldest: '오래된순',
+  highest: '평점 높은순',
+  lowest: '평점 낮은순',
+};
+
+function setJournalSortMenu(open, restoreFocus = false) {
+  $('#reviewSortMenu').hidden = !open;
+  $('#reviewSortToggle').setAttribute('aria-expanded', String(open));
+  if (open) $('#reviewSortMenu [aria-pressed="true"]').focus();
+  else if (restoreFocus) $('#reviewSortToggle').focus();
+}
+
+function updateJournalSortControls() {
+  const button = $('#reviewSortToggle');
+  button.disabled = !journalLoaded || journalBusy;
+  button.title = journalSortLabels[journalSort];
+  button.setAttribute('aria-label', '정렬: ' + journalSortLabels[journalSort]);
+  button.classList.toggle('is-sorted', journalSort !== 'latest');
+  document.querySelectorAll('[data-journal-sort]').forEach((item) => {
+    item.setAttribute('aria-pressed', String(item.dataset.journalSort === journalSort));
+  });
+}
+
+async function changeJournalSort(order) {
+  setJournalSortMenu(false, true);
+  if (
+    !Object.hasOwn(journalSortLabels, order) ||
+    order === journalSort ||
+    !journalLoaded ||
+    journalBusy
+  )
+    return;
+  const previous = journalSort,
+    previousLimit = journalLimit,
+    request = ++journalRequest;
+  const target = groupId,
+    author = filter;
+  const isCurrent = () => request === journalRequest && target === groupId && author === filter;
+  journalSort = order;
+  journalLimit = 24;
+  journalBusy = true;
+  journalLoaded = false;
+  journalFailed = false;
+  updateJournalPagination();
+  try {
+    // Other sort orders need all review metadata to merge legacy/new visits correctly.
+    // Image URLs and image bytes remain lazy loaded.
+    await ensureJournalPage(request);
+    if (!isCurrent()) return;
+    journalLoaded = true;
+    renderJournalFeed();
+    observePhotos();
+  } catch (_) {
+    if (!isCurrent()) return;
+    journalSort = previous;
+    journalLimit = previousLimit;
+    journalLoaded = true;
+    renderJournalFeed();
+    observePhotos();
+    status('정렬을 변경하지 못했습니다. 다시 시도해주세요.');
+  } finally {
+    if (isCurrent()) {
+      journalBusy = false;
+      updateJournalPagination();
+    }
+  }
+}
+
+function initReviewsSort() {
+  $('#reviewSortToggle').onclick = () => setJournalSortMenu($('#reviewSortMenu').hidden);
+  $('#reviewSortMenu').onclick = (event) => {
+    const button = event.target.closest('[data-journal-sort]');
+    if (button) changeJournalSort(button.dataset.journalSort);
+  };
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.review-sort')) setJournalSortMenu(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !$('#reviewSortMenu').hidden) {
+      event.preventDefault();
+      setJournalSortMenu(false, true);
+    }
+  });
 }
 
 ;
@@ -842,6 +967,7 @@ function initGroupsInvitesActions() {
 /* Source: core/navigation.js */
 function setView(view) {
   currentView = view;
+  setJournalSortMenu(false);
   for (const name of Object.keys(viewNames)) {
     $('#' + name + 'View').hidden = name !== view;
     const nav = $('#' + name + 'Nav');
@@ -868,7 +994,7 @@ function initCoreNavigationControls() {
 }
 
 function initCoreNavigationActions() {
-  for (const name of ['map', 'gallery', 'calendar'])
+  for (const name of ['map', 'gallery', 'calendar', 'labs'])
     for (const prefix of ['', 'mobile']) {
       const id = prefix ? prefix + name[0].toUpperCase() + name.slice(1) : name + 'Nav';
       $('#' + id).onclick = () => setView(name);
@@ -2308,13 +2434,20 @@ function initPhotosPagination() {
 /* Source: reviews/data.js */
 async function ensureJournalPage(request = journalRequest) {
   const target = groupId,
-    author = filter;
-  while (visitNext && journalRows().length < journalLimit) {
+    author = filter,
+    order = journalSort;
+  while (visitNext && (order !== 'latest' || journalRows().length < journalLimit)) {
     const cursor = visitNext,
       result = await api(
         `/groups/${target}/visits?author=${author}&after=${encodeURIComponent(cursor)}`,
       );
-    if (request !== journalRequest || groupId !== target || filter !== author) return;
+    if (
+      request !== journalRequest ||
+      groupId !== target ||
+      filter !== author ||
+      journalSort !== order
+    )
+      return;
     visits = [...new Map([...visits, ...result.items].map((v) => [v.id, v])).values()];
     visitNext = result.next;
     if (visitNext === cursor) throw new Error('리뷰를 더 불러오지 못했습니다. 다시 시도해주세요.');
@@ -2337,6 +2470,7 @@ function resetJournalPagination() {
 }
 
 function updateJournalPagination() {
+  updateJournalSortControls();
   $('#journalLoadStatus').textContent = journalBusy
     ? '리뷰를 불러오는 중…'
     : journalFailed
@@ -2577,7 +2711,7 @@ function journalScoreBadge(row) {
     .map((r) => Number(r.score))
     .filter((s) => Number.isFinite(s) && s >= 1 && s <= 10);
   if (!scores.length) return '';
-  const average = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+  const average = journalAverage(row);
   const [emoji, mood, ink] = band(average),
     image = journalEmojiImage(emoji);
   const label = `${filter ? '내 점수' : '평균'} ${Number(average.toFixed(2))} · 리뷰 ${scores.length}개`;
@@ -2992,3 +3126,4 @@ initGroupsInvitesActions();
 initGroupsSettingsNavigation();
 initReviewsDetail();
 initReviewsComposer();
+initReviewsSort();

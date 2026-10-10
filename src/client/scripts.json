@@ -3,6 +3,7 @@
   "core/state.js",
   "groups/invite-state.js",
   "reviews/model.js",
+  "reviews/sort.js",
   "auth/model.js",
   "groups/invite-model.js",
   "map/clusters.js",

@@ -25,6 +25,7 @@
         ><button class="nav-item" id="mapNav">지도</button
         ><button class="nav-item" id="galleryNav">사진</button
         ><button class="nav-item" id="calendarNav">일정</button
+        ><button class="nav-item" id="labsNav">실험실</button
         ><button class="nav-item" id="groupNav">모임 설정</button>
         <div class="sidebar-bottom">
           <button id="myName" aria-label="내 프로필"></button
@@ -41,7 +42,40 @@
         </header>
         <main id="main">
           <section id="journalView">
-  <section class="page-head"><h1>리뷰</h1></section>
+  <section class="page-head journal-heading">
+    <h1>리뷰</h1>
+    <div class="review-sort">
+      <button
+        id="reviewSortToggle"
+        class="review-sort-toggle"
+        type="button"
+        aria-label="정렬: 최신순"
+        title="최신순"
+        aria-expanded="false"
+        aria-controls="reviewSortMenu"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 4v16m-4-4 4 4 4-4M16 20V4m-4 4 4-4 4 4" />
+        </svg>
+      </button>
+      <div id="reviewSortMenu" class="review-sort-menu" role="group" aria-label="리뷰 정렬" hidden>
+        <button type="button" data-journal-sort="latest" aria-pressed="true">최신순</button>
+        <button type="button" data-journal-sort="oldest" aria-pressed="false">오래된순</button>
+        <button type="button" data-journal-sort="highest" aria-pressed="false">평점 높은순</button>
+        <button type="button" data-journal-sort="lowest" aria-pressed="false">평점 낮은순</button>
+      </div>
+    </div>
+  </section>
   <div class="filter-bar" id="filters"></div>
   <div id="records"></div>
   <div class="journal-pagination" id="journalSentinel">
@@ -155,12 +189,33 @@
   </div>
 </section>
 
+          <section id="labsView" hidden>
+  <section class="page-head"><h1>실험실</h1></section>
+  <div class="labs-empty">
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15 6h10M17 6v11L8 31a2 2 0 0 0 1.7 3h20.6A2 2 0 0 0 32 31l-9-14V6M13 25h14" />
+      <path d="M17 29h.01M23 30h.01" />
+    </svg>
+    <p>새로운 기능을 준비하고 있어요.</p>
+  </div>
+</section>
+
         </main>
       </div>
       <nav class="mobile-nav">
         <button id="mobileJournal">리뷰</button><button id="mobileMap">지도</button
         ><button id="mobileGallery">사진</button><button id="mobileCalendar">일정</button
-        ><button id="mobileGroups">모임</button>
+        ><button id="mobileLabs">실험실</button><button id="mobileGroups">모임</button>
       </nav>
     </div>
     <dialog id="profileDialog" aria-labelledby="profileTitle">

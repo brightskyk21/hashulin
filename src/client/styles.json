@@ -9,5 +9,6 @@
   "map/styles.css",
   "places/styles.css",
   "reviews/styles.css",
-  "reviews/badge.css"
+  "reviews/badge.css",
+  "labs/styles.css"
 ]

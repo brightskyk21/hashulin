@@ -1,12 +1,19 @@
 async function ensureJournalPage(request = journalRequest) {
   const target = groupId,
-    author = filter;
-  while (visitNext && journalRows().length < journalLimit) {
+    author = filter,
+    order = journalSort;
+  while (visitNext && (order !== 'latest' || journalRows().length < journalLimit)) {
     const cursor = visitNext,
       result = await api(
         `/groups/${target}/visits?author=${author}&after=${encodeURIComponent(cursor)}`,
       );
-    if (request !== journalRequest || groupId !== target || filter !== author) return;
+    if (
+      request !== journalRequest ||
+      groupId !== target ||
+      filter !== author ||
+      journalSort !== order
+    )
+      return;
     visits = [...new Map([...visits, ...result.items].map((v) => [v.id, v])).values()];
     visitNext = result.next;
     if (visitNext === cursor) throw new Error('리뷰를 더 불러오지 못했습니다. 다시 시도해주세요.');
@@ -29,6 +36,7 @@ function resetJournalPagination() {
 }
 
 function updateJournalPagination() {
+  updateJournalSortControls();
   $('#journalLoadStatus').textContent = journalBusy
     ? '리뷰를 불러오는 중…'
     : journalFailed
