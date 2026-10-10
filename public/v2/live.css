@@ -39,3 +39,23 @@
 .member-action{font-size:12px;color:#9f302d;min-height:44px;padding:8px 10px}
 #membershipDialog{line-height:1.8}#membershipDialog>.primary{margin-top:22px}
 #reviewConflict{padding:12px 14px;border:1px solid #e3c693;border-radius:10px;background:#fff9ed}#reviewConflict .note{margin:0 0 8px;color:#775a27}#reloadReview{min-height:44px;font-size:13px;text-decoration:underline}
+
+/* Mobile place actions and numeric score presentation. */
+.place-category{display:inline-block;font-size:12px;color:#727a75;line-height:1.5;margin-top:6px}
+#placeDetailCategory{margin:0 0 8px}#placeDetailAddress{margin-top:0}
+#placeDetailActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}
+#placeDetailActions .detail-average{grid-column:1/-1;margin-bottom:4px}
+#placeDetailActions>button{margin:0;min-height:46px;padding:12px;font-size:13px;border-radius:12px}
+#placeDetailActions>[data-place-review]{grid-column:1/-1}
+.secondary-action{border:1px solid #dfe4e0;background:#f6f8f6;color:#34473b;font-weight:550}
+.secondary-action:hover{background:#ecf1ed}.secondary-action:active{background:#e2eae4}
+.score-big small{font-size:19px;font-weight:450;color:#8a918d;letter-spacing:0}
+#reviewDialog .score-legends{position:relative;height:24px;margin:14px 12px 0;font-size:12px;color:#8a918d}
+#reviewDialog .score-legends span{position:absolute;transform:translateX(-50%);font-size:12px;line-height:1}
+#reviewDialog .score-legends span:nth-child(1){left:0}#reviewDialog .score-legends span:nth-child(2){left:22.222%}#reviewDialog .score-legends span:nth-child(3){left:44.444%}#reviewDialog .score-legends span:nth-child(4){left:55.556%}#reviewDialog .score-legends span:nth-child(5){left:77.778%}#reviewDialog .score-legends span:nth-child(6){left:100%}
+#reviewDialog input[type=range]{background:linear-gradient(to right,#b96961 0%,#b96961 22.222%,#c89164 22.222%,#c89164 44.444%,#c3ae69 44.444%,#c3ae69 55.556%,#92ac73 55.556%,#92ac73 77.778%,#4f9270 77.778%,#4f9270 100%)}
+#reviewDialog input[type=date]{min-width:0;max-width:100%;width:100%;-webkit-appearance:none;appearance:none}
+#reviewDialog #placeFields{min-width:0}
+.dialog-head>[data-close]{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#f5f7f5;padding:0}
+
+#placeDetailReviews .live-review header{display:flex;justify-content:space-between;align-items:center;gap:12px}
