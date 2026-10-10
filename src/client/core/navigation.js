@@ -14,6 +14,7 @@ function setView(view) {
   if (view === 'journal') scheduleReviewClamps();
   if (view === 'gallery' && !galleryLoaded) loadGallery().catch((e) => status(e.message));
   if (view === 'calendar') loadCalendar().catch((e) => status(e.message));
+  updateJournalPagination();
   observePhotos();
 }
 

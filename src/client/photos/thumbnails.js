@@ -14,7 +14,7 @@ const photoObserver = new IntersectionObserver(
         loadThumbnail(entry.target);
       }
   },
-  { rootMargin: '120px' },
+  { rootMargin: '480px' },
 );
 
 function observePhotos() {

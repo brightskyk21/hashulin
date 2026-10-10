@@ -569,3 +569,21 @@
 .journal-entry {
   position: relative;
 }
+
+.journal-pagination {
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  color: #8a918d;
+  font-size: 12px;
+}
+.journal-pagination button {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid #dfe4e0;
+  border-radius: 10px;
+  color: #34473b;
+}

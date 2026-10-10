@@ -2,7 +2,10 @@
   <section class="page-head"><h1>리뷰</h1></section>
   <div class="filter-bar" id="filters"></div>
   <div id="records"></div>
-  <button id="moreVisits" hidden>리뷰 더보기</button>
+  <div class="journal-pagination" id="journalSentinel">
+    <span id="journalLoadStatus" role="status" aria-live="polite"></span>
+    <button id="moreVisits" hidden>다시 시도</button>
+  </div>
   <section id="archiveSection" hidden>
     <div class="page-head">
       <h2>이전 리뷰</h2>

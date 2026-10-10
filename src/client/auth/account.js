@@ -24,6 +24,8 @@ function clearAccount() {
   $('#photoLarge').removeAttribute('src');
   $('#archiveSection').hidden = true;
   groupId = '';
+  ++journalRequest;
+  resetJournalPagination();
   sessionStorage.removeItem('hashulin.pendingInvite');
   inviteToken = null;
   document.querySelectorAll('dialog[open]').forEach((d) => d.close());

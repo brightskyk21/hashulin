@@ -1471,11 +1471,3 @@ button:disabled {
   border-radius: 9px;
   min-height: 44px;
 }
-#moreVisits {
-  display: block;
-  margin: 24px auto;
-  padding: 12px 24px;
-  border: 1px solid #dfe4e0;
-  border-radius: 10px;
-  color: #59685e;
-}

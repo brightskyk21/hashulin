@@ -478,18 +478,27 @@ function journalAuthor(r) {
     : members.find((m) => m.user_id === r.author_id)?.h_profiles?.display_name || '멤버';
 }
 
-function renderJournalFeed() {
+function renderJournalFeed(append = false) {
   const rows = journalRows();
-  visibleJournal = rows.slice(0, journalLimit);
-  $('#records').innerHTML = visibleJournal.length
+  const next = rows.slice(0, journalLimit);
+  // Appending preserves decoded images, expanded reviews and scroll position.
+  const appendFrom =
+    append && visibleJournal.every((row, index) => row.key === next[index]?.key)
+      ? visibleJournal.length
+      : 0;
+  visibleJournal = next;
+  const html = visibleJournal.length
     ? visibleJournal
+        .slice(appendFrom)
         .map((row) => {
           const photo = journalPhotoButton(row);
           return `<article class="live-card archive-card journal-entry ${photo ? 'with-photos' : ''}"><div class="archive-content"><div class="date">${esc(row.date || '날짜 없음')}</div><button class="journal-open" data-journal="${esc(row.key)}"><h2>${esc(row.place.name)}</h2></button>${row.place.category ? `<p class="place-category">${esc(row.place.category.split('>').pop().trim())}</p>` : ''}${row.reviews.map((r) => `<div class="live-review"><header><strong>${esc(journalAuthor(r))}${r.author_id === session?.user.id ? ' · 나' : ''}</strong><span class="score-pill" style="color:${band(Number(r.score))[2]}">${Number(r.score).toFixed(1)}</span></header>${reviewCopy(r, 'feed')}</div>`).join('')}</div>${photo}${journalScoreBadge(row)}</article>`;
         })
         .join('')
     : `<div class="empty-state"><h2>${filter ? '작성한 리뷰가 없습니다' : '리뷰가 없습니다'}</h2><button class="primary" data-compose>리뷰 추가</button></div>`;
-  $('#moreVisits').hidden = rows.length <= journalLimit && !visitNext;
+  if (appendFrom) $('#records').insertAdjacentHTML('beforeend', html);
+  else $('#records').innerHTML = html;
+  updateJournalPagination();
   $('#archiveSection').hidden = true;
   scheduleReviewClamps();
   if (selectedJournal && $('#journalDialog').open) renderJournalDetail(selectedJournal);
@@ -506,6 +515,7 @@ async function loadVisits() {
   archive = null;
   resetWorkspace();
   const request = ++journalRequest;
+  resetJournalPagination();
   $('#archiveSection').hidden = true;
   if (!id) {
     render();
@@ -528,6 +538,7 @@ async function loadVisits() {
     workspace = w;
     await ensureJournalPage(request);
     if (version !== loadVersion || id !== groupId) return;
+    journalLoaded = true;
     galleryIds = [];
     galleryNext = null;
     galleryLoaded = false;
@@ -560,6 +571,7 @@ async function refreshJournal(legacy = false) {
   const target = groupId,
     author = filter,
     request = ++journalRequest;
+  resetJournalPagination();
   const [v, a] = await Promise.all([
     api(`/groups/${target}/visits?author=${author}`),
     legacy ? api(`/groups/${target}/archive`) : Promise.resolve(archive),
@@ -571,6 +583,7 @@ async function refreshJournal(legacy = false) {
   placeVisits = {};
   await ensureJournalPage(request);
   if (request !== journalRequest) return;
+  journalLoaded = true;
   await refreshPlaces();
 }
 
@@ -611,6 +624,8 @@ function clearAccount() {
   $('#photoLarge').removeAttribute('src');
   $('#archiveSection').hidden = true;
   groupId = '';
+  ++journalRequest;
+  resetJournalPagination();
   sessionStorage.removeItem('hashulin.pendingInvite');
   inviteToken = null;
   document.querySelectorAll('dialog[open]').forEach((d) => d.close());
@@ -841,6 +856,7 @@ function setView(view) {
   if (view === 'journal') scheduleReviewClamps();
   if (view === 'gallery' && !galleryLoaded) loadGallery().catch((e) => status(e.message));
   if (view === 'calendar') loadCalendar().catch((e) => status(e.message));
+  updateJournalPagination();
   observePhotos();
 }
 
@@ -2121,7 +2137,7 @@ const photoObserver = new IntersectionObserver(
         loadThumbnail(entry.target);
       }
   },
-  { rootMargin: '120px' },
+  { rootMargin: '480px' },
 );
 
 function observePhotos() {
@@ -2301,18 +2317,87 @@ async function ensureJournalPage(request = journalRequest) {
     if (request !== journalRequest || groupId !== target || filter !== author) return;
     visits = [...new Map([...visits, ...result.items].map((v) => [v.id, v])).values()];
     visitNext = result.next;
-    if (visitNext === cursor) throw new Error('리뷰을 더 불러오지 못했습니다. 다시 시도해주세요.');
+    if (visitNext === cursor) throw new Error('리뷰를 더 불러오지 못했습니다. 다시 시도해주세요.');
   }
 }
 
-function initReviewsData() {
-  $('#moreVisits').onclick = () =>
-    busy($('#moreVisits'), async () => {
-      journalLimit += 24;
-      await ensureJournalPage();
-      render();
-    });
+let journalBusy = false,
+  journalFailed = false,
+  journalLoaded = false;
 
+function journalHasMore() {
+  return !!visitNext || journalRows().length > journalLimit;
+}
+
+function resetJournalPagination() {
+  journalBusy = false;
+  journalFailed = false;
+  journalLoaded = false;
+  updateJournalPagination();
+}
+
+function updateJournalPagination() {
+  $('#journalLoadStatus').textContent = journalBusy
+    ? '리뷰를 불러오는 중…'
+    : journalFailed
+      ? '리뷰를 불러오지 못했습니다.'
+      : '';
+  $('#moreVisits').hidden = !journalFailed;
+  $('#records').setAttribute('aria-busy', String(journalBusy));
+  journalObserver.unobserve($('#journalSentinel'));
+  if (
+    currentView === 'journal' &&
+    groupId &&
+    journalLoaded &&
+    !journalBusy &&
+    !journalFailed &&
+    journalHasMore()
+  )
+    journalObserver.observe($('#journalSentinel'));
+}
+
+async function loadMoreReviews() {
+  if (!groupId || !journalLoaded || journalBusy || !journalHasMore()) return;
+  const request = journalRequest,
+    target = groupId,
+    author = filter,
+    previousLimit = journalLimit;
+  const isCurrent = () => request === journalRequest && target === groupId && author === filter;
+  journalBusy = true;
+  journalFailed = false;
+  journalLimit += 24;
+  updateJournalPagination();
+  try {
+    await ensureJournalPage(request);
+    if (!isCurrent()) return;
+    renderJournalFeed(true);
+    observePhotos();
+  } catch (error) {
+    if (!isCurrent()) return;
+    journalLimit = previousLimit;
+    journalFailed = true;
+  } finally {
+    if (isCurrent()) {
+      journalBusy = false;
+      updateJournalPagination();
+    }
+  }
+}
+
+const journalObserver = new IntersectionObserver(
+  (entries) => {
+    if (
+      currentView === 'journal' &&
+      entries.some((entry) => entry.isIntersecting) &&
+      !journalFailed
+    )
+      loadMoreReviews();
+  },
+  { rootMargin: '0px 0px 480px 0px' },
+);
+
+function initReviewsData() {
+  $('#moreVisits').onclick = loadMoreReviews;
   $('#moreArchive').onclick = () => {
     archiveLimit += 24;
     renderArchive();

@@ -7,6 +7,7 @@ async function loadVisits() {
   archive = null;
   resetWorkspace();
   const request = ++journalRequest;
+  resetJournalPagination();
   $('#archiveSection').hidden = true;
   if (!id) {
     render();
@@ -29,6 +30,7 @@ async function loadVisits() {
     workspace = w;
     await ensureJournalPage(request);
     if (version !== loadVersion || id !== groupId) return;
+    journalLoaded = true;
     galleryIds = [];
     galleryNext = null;
     galleryLoaded = false;
@@ -61,6 +63,7 @@ async function refreshJournal(legacy = false) {
   const target = groupId,
     author = filter,
     request = ++journalRequest;
+  resetJournalPagination();
   const [v, a] = await Promise.all([
     api(`/groups/${target}/visits?author=${author}`),
     legacy ? api(`/groups/${target}/archive`) : Promise.resolve(archive),
@@ -72,6 +75,7 @@ async function refreshJournal(legacy = false) {
   placeVisits = {};
   await ensureJournalPage(request);
   if (request !== journalRequest) return;
+  journalLoaded = true;
   await refreshPlaces();
 }
 
