@@ -59,3 +59,9 @@
 .dialog-head>[data-close]{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#f5f7f5;padding:0}
 
 #placeDetailReviews .live-review header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+
+.dialog-head>[data-close]{width:44px;height:44px;min-width:44px;min-height:44px;display:grid;place-items:center;background:transparent;border:0;border-radius:10px;color:#707873}
+.dialog-head>[data-close]:hover{background:#f4f6f4}.dialog-head h2:focus{outline:none}
+.dialog-head>[data-close]:focus-visible{outline:2px solid #738e7d;outline-offset:1px}
+.gallery-pagination{min-height:60px;display:flex;justify-content:center;align-items:center;gap:12px;margin:20px 0;color:#8a918d;font-size:12px}
+.gallery-pagination button{padding:10px 14px;border:1px solid #dfe4e0;border-radius:10px;color:#34473b}

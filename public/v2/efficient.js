@@ -11,8 +11,34 @@ function queueThumbnail(scope,user,id){
  return new Promise((resolve,reject)=>queue.push({id,resolve,reject}));
 }
 function mergeMedia(items){const map=new Map(workspace.media.map(p=>[p.id,p]));items.forEach(p=>map.set(p.id,{...map.get(p.id),...p}));workspace.media=[...map.values()];}
-async function loadGallery(more=false){const target=groupId,version=++galleryRequest;if(!target)return;const query=new URLSearchParams({kind:$('#galleryKind').value,place:$('#galleryPlace').value});if(more&&galleryNext)query.set('after',galleryNext);const result=await api(`/groups/${target}/media?${query}`);if(groupId!==target||version!==galleryRequest)return;mergeMedia(result.items);galleryIds=more?[...new Set([...galleryIds,...result.items.map(p=>p.id)])]:result.items.map(p=>p.id);galleryNext=result.next;galleryLoaded=true;renderGallery();$('#moreGallery').hidden=!galleryNext;observePhotos();}
-$('#moreGallery').onclick=()=>busy($('#moreGallery'),()=>loadGallery(true));
+let galleryBusy=false,galleryFailed=false;
+function updateGalleryPagination(){
+ $('#galleryLoadStatus').textContent=galleryBusy?'사진을 불러오는 중…':galleryFailed?'사진을 불러오지 못했어요.':galleryLoaded&&!galleryNext&&galleryIds.length?'사진을 모두 불러왔어요.':'';
+ $('#moreGallery').hidden=!galleryFailed;
+ $('#galleryGrid').setAttribute('aria-busy',String(galleryBusy));
+ galleryObserver.unobserve($('#gallerySentinel'));
+ if(!galleryBusy&&!galleryFailed&&galleryLoaded&&galleryNext)galleryObserver.observe($('#gallerySentinel'));
+}
+async function loadGallery(more=false){
+ if(!groupId||(more&&(galleryBusy||!galleryLoaded||!galleryNext)))return;
+ const target=groupId,version=++galleryRequest;
+ const query=new URLSearchParams({kind:$('#galleryKind').value,place:$('#galleryPlace').value});
+ if(more)query.set('after',galleryNext);
+ galleryBusy=true;galleryFailed=false;
+ if(!more){galleryIds=[];galleryNext=null;galleryLoaded=false;renderGallery();}
+ updateGalleryPagination();
+ try{
+  const result=await api(`/groups/${target}/media?${query}`);
+  if(groupId!==target||version!==galleryRequest)return;
+  mergeMedia(result.items);galleryIds=more?[...new Set([...galleryIds,...result.items.map(p=>p.id)])]:result.items.map(p=>p.id);
+  galleryNext=result.next;galleryLoaded=true;renderGallery(more);observePhotos();
+ }catch(error){if(groupId===target&&version===galleryRequest)galleryFailed=true;throw error;}
+ finally{if(groupId===target&&version===galleryRequest){galleryBusy=false;updateGalleryPagination();}}
+}
+const galleryObserver=new IntersectionObserver(entries=>{
+ if(currentView==='gallery'&&entries.some(e=>e.isIntersecting)&&!galleryFailed)loadGallery(true).catch(e=>status(e.message));
+},{rootMargin:'0px 0px 400px 0px'});
+$('#moreGallery').onclick=()=>busy($('#moreGallery'),()=>loadGallery(galleryLoaded&&!!galleryNext));
 $('#moreVisits').onclick=()=>busy($('#moreVisits'),async()=>{const target=groupId;const result=await api(`/groups/${target}/visits?author=${filter}&after=${encodeURIComponent(visitNext)}`);if(target!==groupId)return;visits=[...new Map([...visits,...result.items].map(v=>[v.id,v])).values()];visitNext=result.next;render();renderArchive();});
 $('#moreArchive').onclick=()=>{archiveLimit+=24;renderArchive();};
 async function refreshPlaces(){const target=groupId;const w=await api(`/groups/${target}/content`);if(target!==groupId)return;workspace.places=w.places;mergeMedia(w.media);renderWorkspace();render();renderArchive();observePhotos();}
