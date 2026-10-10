@@ -135,12 +135,13 @@ button.map-score-pin{min-height:34px;border-width:1px;padding:6px 9px;font-size:
 }
 
 /* A compact summary for only the reviews visible on this card. */
+.journal-entry{position:relative}
 .journal-entry.with-photos{row-gap:0}
-.journal-score-footer{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:8px}
+.journal-score-footer{position:absolute;top:-12px;right:-8px;z-index:1}
 .journal-score{position:relative}
-.journal-score summary{display:grid;place-items:center;list-style:none;width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:color-mix(in srgb,var(--badge-ink) 12%,white);-webkit-tap-highlight-color:transparent}
+.journal-score summary{display:grid;place-items:center;list-style:none;width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:transparent;-webkit-tap-highlight-color:transparent}
 .journal-score summary::-webkit-details-marker{display:none}
-.journal-score summary span{font-size:23px;line-height:1}
-.journal-score summary:hover{background:color-mix(in srgb,var(--badge-ink) 18%,white)}
+.journal-score summary span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--badge-ink) 12%,white);font-size:18px;line-height:1}
+.journal-score summary:hover span{background:color-mix(in srgb,var(--badge-ink) 18%,white)}
 .journal-score summary:focus-visible{outline:2px solid var(--badge-ink);outline-offset:3px}
-.journal-score-info{position:absolute;right:54px;top:0;display:flex;align-items:center;height:44px;white-space:nowrap;font-size:12px;color:#68726b;font-variant-numeric:tabular-nums}
+.journal-score-info{position:absolute;right:44px;top:8px;display:flex;align-items:center;height:28px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:#fff;white-space:nowrap;font-size:12px;color:#68726b;font-variant-numeric:tabular-nums}
