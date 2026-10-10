@@ -1,0 +1,37 @@
+<dialog id="uploadDialog" aria-labelledby="uploadTitle">
+  <div class="dialog-head">
+    <h2 id="uploadTitle">사진 올리기</h2>
+    <button data-close aria-label="사진 올리기 닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <form id="uploadForm">
+    <label
+      >사진<input
+        type="file"
+        id="photoFiles"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        required
+    /></label>
+    <p class="note">한 번에 최대 10장 · 한 장당 8MB · JPG, PNG, WebP</p>
+    <label
+      >장소<select id="uploadPlace">
+        <option value="">장소 없이 올리기</option>
+      </select></label
+    ><label>사진 설명<input id="uploadCaption" maxlength="500" placeholder="선택 사항" /></label>
+    <p id="uploadProgress" role="status"></p>
+    <button class="primary">업로드</button>
+  </form>
+</dialog>

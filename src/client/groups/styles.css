@@ -1,0 +1,207 @@
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 17px 0;
+  text-align: left;
+  padding: 0;
+  width: 100%;
+}
+.member-card:hover {
+  background: none;
+}
+.member-card strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.member-card small {
+  display: block;
+  font-size: 10px;
+  color: #a0a796;
+  margin-top: 4px;
+}
+.member-list {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 15px;
+}
+.group-label {
+  font-size: 12px;
+  color: #7b837c;
+}
+.member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+}
+#groupList button {
+  font-size: 12px;
+}
+#groupTitle {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+#groupDialog h3 {
+  margin-top: 24px;
+}
+#membership {
+  padding-bottom: 12px;
+}
+#inviteLink {
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .member-row {
+    flex-wrap: wrap;
+  }
+}
+.legacy-authors {
+  margin-bottom: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.legacy-authors summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.author-link-row {
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+}
+.author-link-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 12px 0;
+}
+.author-link-form label {
+  flex: 1;
+  margin: 0;
+}
+.author-link-form select {
+  margin-bottom: 0;
+}
+.author-link-form > .primary {
+  margin: 0;
+  min-height: 44px;
+}
+.author-confirm {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f5f7f4;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.author-confirm button {
+  margin-top: 10px;
+}
+@media (max-width: 760px) {
+  .author-link-form {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 760px) {
+  .author-link-form label {
+    min-width: 160px;
+  }
+}
+@media (max-width: 760px) {
+  .topbar #groupTitle {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.member-action {
+  font-size: 12px;
+  color: #9f302d;
+  min-height: 44px;
+  padding: 8px 10px;
+}
+#membershipDialog {
+  line-height: 1.8;
+}
+#membershipDialog > .primary {
+  margin-top: 22px;
+}
+#inviteBox {
+  padding: 18px;
+  margin: 16px 0 24px;
+  border: 1px solid #dfe7e0;
+  background: #f7faf7;
+  border-radius: 14px;
+  scroll-margin: 20px;
+}
+#groupDialog #inviteBox h3 {
+  margin: 0;
+  font-size: 16px;
+}
+#inviteMessage {
+  margin: 10px 0 16px;
+  color: #3b6048;
+}
+#inviteBox label {
+  display: block;
+  font-size: 12px;
+  color: #788378;
+}
+#inviteLink {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0 12px;
+  padding: 12px;
+  border: 1px solid #dfe7e0;
+  border-radius: 9px;
+  background: white;
+  font-size: 16px;
+}
+#copyInvite {
+  width: 100%;
+  min-height: 46px;
+  justify-content: center;
+}
+.account-choices {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+.account-choices button {
+  text-align: left;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fafbf9;
+}
+.account-choices strong,
+.account-choices span {
+  display: block;
+}
+.account-choices span {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+#addGroup {
+  width: 100%;
+  margin-top: 16px;
+}
+#renameGroupForm {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+#inviteCode {
+  font-size: 12px;
+}
+#choiceDialog,
+#profileDialog {
+  width: 480px;
+}

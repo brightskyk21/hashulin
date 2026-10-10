@@ -1,0 +1,33 @@
+<section id="calendarView" hidden>
+  <div class="workspace-heading">
+    <div><h1>일정</h1></div>
+    <button class="primary" id="addEvent">일정 추가</button>
+  </div>
+  <div class="workspace-calendar">
+    <section class="agenda">
+      <div class="upcoming-heading">
+        <h2 id="agendaTitle">다가오는 일정</h2>
+        <button id="showCancelled">취소된 일정</button>
+      </div>
+      <div id="upcomingEvents"></div>
+    </section>
+    <details class="calendar-panel">
+      <summary>달력에서 날짜 선택</summary>
+      <div class="month-controls">
+        <button id="previousMonth" aria-label="이전 달">‹</button>
+        <h2 id="monthTitle"></h2>
+        <button id="nextMonth" aria-label="다음 달">›</button
+        ><button id="calendarToday">오늘</button>
+      </div>
+      <div class="week-labels">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span
+        ><span>토</span>
+      </div>
+      <div id="monthGrid" class="month-grid"></div>
+      <div class="selected-day">
+        <h3 id="selectedDayTitle"></h3>
+        <div id="dayEvents"></div>
+      </div>
+    </details>
+  </div>
+</section>

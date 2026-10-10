@@ -1,0 +1,26 @@
+<section id="galleryView" hidden>
+  <div class="workspace-heading">
+    <div><h1>사진</h1></div>
+    <button class="primary" id="uploadPhotos">사진 올리기</button>
+  </div>
+  <div class="workspace-toolbar">
+    <label
+      >사진 종류<select id="galleryKind">
+        <option value="all">전체 사진</option>
+        <option value="place">장소 사진</option>
+        <option value="couple">함께 올린 사진</option>
+        <option value="trash">휴지통</option>
+      </select></label
+    ><label
+      >장소<select id="galleryPlace">
+        <option value="">모든 장소</option>
+      </select></label
+    ><span id="galleryCount" class="note"></span>
+  </div>
+  <p id="galleryNotice" class="note"></p>
+  <div id="galleryGrid" class="live-gallery"></div>
+  <div id="gallerySentinel" class="gallery-pagination">
+    <span id="galleryLoadStatus" role="status" aria-live="polite"></span
+    ><button id="moreGallery" hidden>다시 불러오기</button>
+  </div>
+</section>

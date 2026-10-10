@@ -5,9 +5,11 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
+    "build": "node scripts/build-client.js",
+    "prestart": "npm run build",
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test test/*.test.js && node test/rls-check.mjs"
+    "test": "node scripts/build-client.js --check && node --test test/*.test.js && node test/rls-check.mjs"
   },
   "engines": {
     "node": ">=22"

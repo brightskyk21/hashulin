@@ -1,0 +1,72 @@
+.journal-score-footer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+.journal-score {
+  position: relative;
+}
+.journal-score summary {
+  position: relative;
+  display: grid;
+  place-items: center;
+  list-style: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.journal-score summary::-webkit-details-marker {
+  display: none;
+}
+.journal-score-disc {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--badge-ink) 12%, white);
+}
+.journal-score-disc > .journal-score-emoji {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+  border-radius: 0;
+  font-size: 18px;
+  line-height: 18px;
+}
+.journal-score summary:hover .journal-score-disc {
+  background: color-mix(in srgb, var(--badge-ink) 18%, white);
+}
+.journal-score summary:focus-visible {
+  outline: 2px solid var(--badge-ink);
+  outline-offset: 3px;
+}
+.journal-score-info {
+  position: absolute;
+  right: 22px;
+  top: -14px;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #68726b;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,123 @@
+<dialog id="reviewDialog">
+  <div class="dialog-head">
+    <h2 id="formTitle">리뷰 추가</h2>
+    <button data-close aria-label="닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <form id="reviewForm">
+    <div id="placeFields">
+      <label
+        >장소 이름
+        <div class="compose-place-search">
+          <input
+            name="placeName"
+            maxlength="100"
+            required
+            placeholder="다녀온 식당이나 카페"
+            list="places"
+          /><button type="button" id="composeSearch" class="secondary-action">검색</button>
+        </div>
+        <datalist id="places"></datalist
+      ></label>
+      <div id="composeSearchResults" class="compose-search-results"></div>
+      <label
+        >주소 또는 지점<input
+          name="address"
+          maxlength="300"
+          placeholder="예: 서울 성동구 · 성수점" /></label
+      ><label>방문 날짜<input name="date" type="date" required /></label>
+    </div>
+    <div class="score-editor">
+      <div class="score-editor-top">
+        <label for="score">내 점수</label
+        ><button type="button" id="scoreHelp" aria-expanded="false" aria-controls="scoreGuide">
+          기준 보기
+        </button>
+      </div>
+      <div class="score-big" id="scoreBig">
+        <output id="scoreValue" for="score" aria-live="polite">—</output><small>/ 10</small>
+      </div>
+      <p id="scorePrompt" class="score-prompt">점수를 선택해주세요</p>
+      <div class="score-control">
+        <div class="score-track">
+          <span id="scoreEmoji" class="score-emoji" aria-hidden="true">⭐</span
+          ><input
+            id="score"
+            name="score"
+            type="range"
+            min="1"
+            max="10"
+            step="0.1"
+            value="5.5"
+            aria-label="방문 전체 만족도 점수"
+          />
+        </div>
+        <div class="score-legends" aria-hidden="true">
+          <span>1</span><span>3</span><span>5</span><span>6</span><span>8</span><span>10</span>
+        </div>
+      </div>
+      <div id="scoreGuide" hidden>
+        <strong>방문 전체 만족도</strong>
+        <p>맛·가격·서비스 등을 종합해 평가합니다.</p>
+        <dl>
+          <div>
+            <dt>🤢 1–2.9</dt>
+            <dd>매우 불만족</dd>
+          </div>
+          <div>
+            <dt>😣 3–4.9</dt>
+            <dd>불만족</dd>
+          </div>
+          <div>
+            <dt>😐 5–5.9</dt>
+            <dd>보통</dd>
+          </div>
+          <div>
+            <dt>😋 6–7.9</dt>
+            <dd>대체로 만족</dd>
+          </div>
+          <div>
+            <dt>⭐ 8–10</dt>
+            <dd>매우 만족</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <label
+      >감상<textarea
+        name="comment"
+        required
+        maxlength="1000"
+        rows="4"
+        placeholder="먹은 메뉴와 좋았거나 아쉬웠던 점"
+      ></textarea>
+    </label>
+    <section id="reviewPhotoSection" class="review-photo-section">
+      <label class="photo-pick"
+        ><span id="reviewPhotoLabel">사진 추가</span><small>선택 · 최대 10장</small
+        ><input id="reviewPhotoFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple
+      /></label>
+      <div id="reviewPhotoPreviews" class="review-photo-previews"></div>
+    </section>
+    <p id="reviewProgress" class="note" role="status"></p>
+    <div id="reviewConflict" hidden>
+      <p class="note">작성 내용은 유지됩니다. 필요한 내용은 복사한 뒤 최신 리뷰를 불러오세요.</p>
+      <button type="button" id="reloadReview">최신 리뷰 불러오기</button>
+    </div>
+    <div class="form-footer">
+      <span>점수와 감상은 필수입니다.</span><button class="primary" id="saveReview">저장</button>
+    </div>
+  </form>
+</dialog>

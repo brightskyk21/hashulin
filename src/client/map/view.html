@@ -1,0 +1,30 @@
+<section id="mapView" hidden>
+  <div class="workspace-heading">
+    <div><h1>지도</h1></div>
+  </div>
+  <form id="mapSearchForm" class="map-search">
+    <input
+      id="mapQuery"
+      maxlength="100"
+      placeholder="식당이나 카페 검색"
+      aria-label="장소 검색"
+      required
+    /><button class="primary">검색</button>
+  </form>
+  <div id="mapSearchResults"></div>
+  <div class="workspace-toolbar">
+    <label
+      >장소<select id="mapStatus">
+        <option value="all">전체</option>
+        <option value="visited">다녀온 곳</option>
+        <option value="wish">가고 싶은 곳</option>
+      </select></label
+    ><span id="mapCount" class="note"></span><button id="mapFit">전체 보기</button>
+  </div>
+  <div class="workspace-map">
+    <div id="realMap" aria-label="저장한 장소 지도">
+      <p class="note">지도를 불러오는 중입니다.</p>
+    </div>
+    <div id="mapPlaceList" class="map-place-list"></div>
+  </div>
+</section>

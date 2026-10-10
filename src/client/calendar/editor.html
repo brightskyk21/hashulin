@@ -1,0 +1,40 @@
+<dialog id="eventDialog" aria-labelledby="eventFormTitle">
+  <div class="dialog-head">
+    <h2 id="eventFormTitle">일정 추가</h2>
+    <button data-close aria-label="일정 닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <form id="eventForm">
+    <label>제목<input name="title" required maxlength="100" /></label>
+    <div class="form-pair">
+      <label>시작 날짜<input name="date" type="date" required /></label
+      ><label>종료 날짜<input name="endDate" type="date" /></label>
+    </div>
+    <div class="form-pair">
+      <label>시작 시간<input name="startTime" type="time" /></label
+      ><label>종료 시간<input name="endTime" type="time" /></label>
+    </div>
+    <p class="note">시간 미입력 시 종일 일정으로 저장됩니다.</p>
+    <label
+      >일정 구분<input name="owner" maxlength="40" list="eventLabels" value="모임" /><datalist
+        id="eventLabels"
+      ></datalist></label
+    ><label>메모<textarea name="memo" maxlength="2000" rows="3"></textarea></label>
+    <div class="event-form-actions">
+      <button id="deleteEvent" type="button" hidden>일정 취소</button
+      ><button class="primary">저장</button>
+    </div>
+  </form>
+</dialog>

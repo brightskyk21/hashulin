@@ -1,0 +1,45 @@
+<dialog id="groupDialog" aria-labelledby="groupSettingsTitle">
+  <div class="dialog-head">
+    <h2 id="groupSettingsTitle">모임 설정</h2>
+    <button data-close aria-label="닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <button id="editProfile" class="settings-link">내 프로필 <span>이름 · 로그아웃 →</span></button>
+  <section id="membership">
+    <h3>내 모임</h3>
+    <div id="groupList"></div>
+    <button id="addGroup" class="secondary-action">모임 만들기 · 참여하기</button>
+    <form id="renameGroupForm" hidden>
+      <label>현재 모임 이름<input id="renameGroupName" required maxlength="60" /></label
+      ><button class="primary">모임 이름 저장</button>
+    </form>
+    <section id="inviteBox" hidden>
+      <h3 id="inviteHeading">초대 링크</h3>
+      <p id="inviteMessage" class="note" role="status" aria-live="polite"></p>
+      <label>초대 주소<input id="inviteLink" readonly aria-label="초대 주소" /></label
+      ><button type="button" id="copyInvite" class="primary">링크 복사</button
+      ><label>초대 코드<input id="inviteCode" readonly aria-label="초대 코드" /></label>
+      <p class="note">초대 코드로도 참여할 수 있습니다.</p>
+      <p class="note">1명 참여 가능 · 유효기간 7일. 새 링크를 만들면 이전 링크는 취소됩니다.</p>
+      <p id="localInviteNote" class="note">
+        지금은 이 컴퓨터의 테스트 주소입니다. 다른 기기에서 사용하려면 공개 배포가 필요해요.
+      </p>
+    </section>
+    <section id="legacyAuthors" class="legacy-authors"></section>
+    <h3>현재 모임 멤버</h3>
+    <div id="currentMembers"></div>
+    <p id="membershipNote" class="note"></p>
+  </section>
+</dialog>

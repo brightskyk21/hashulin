@@ -2,7 +2,7 @@
 
 Last verified: 2026-10-10 (Asia/Seoul). **NOT READY FOR PRODUCTION CUTOVER.**
 No Git push or Render deployment has been performed. Applied database changes are listed below;
-application changes remain local. Do not rerun applied migrations or the original schema.sql.
+application changes remain local. Do not rerun applied migrations or the original db/legacy/schema.sql.
 
 ## Existing data
 
@@ -81,7 +81,7 @@ The deployed legacy server uses service-role and has no caller authentication on
 routes. Its private data is still publicly readable through those endpoints; source code also
 allows unauthenticated modifications. Existing photos remain public.
 
-Local lib/security.js adds fail-closed legacy membership checks, blocks all old writes until
+Local src/server/middleware/security.js adds fail-closed legacy membership checks, blocks all old writes until
 identity/ownership integration is complete, and adds headers. It is NOT deployed. Old pages
 do not send the authenticated token, so pushing this code as-is would break map/gallery/
 calendar use. /healthz and graceful termination are prepared locally.

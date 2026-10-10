@@ -1,0 +1,26 @@
+<dialog id="profileDialog" aria-labelledby="profileTitle">
+  <div class="dialog-head">
+    <h2 id="profileTitle">내 프로필</h2>
+    <button data-close aria-label="닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <p id="profileGuide" class="note"></p>
+  <form id="profileForm">
+    <label
+      >표시할 이름<input id="displayName" required maxlength="40" autocomplete="nickname" /></label
+    ><button class="primary">이름 저장</button>
+  </form>
+  <button id="mobileLogout" class="note">로그아웃</button>
+</dialog>

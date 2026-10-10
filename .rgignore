@@ -1,0 +1,6 @@
+# Search canonical feature sources first. Use rg --no-ignore for generated/legacy files.
+/public/v2/app.js
+/public/v2/app.css
+/public/v2/index.html
+/public/legacy/
+/db/legacy/

@@ -1,0 +1,13 @@
+[
+  "styles/fonts.css",
+  "styles/shared.css",
+  "auth/styles.css",
+  "groups/styles.css",
+  "scores/styles.css",
+  "photos/styles.css",
+  "calendar/styles.css",
+  "map/styles.css",
+  "places/styles.css",
+  "reviews/styles.css",
+  "reviews/badge.css"
+]

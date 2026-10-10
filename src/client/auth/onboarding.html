@@ -1,0 +1,53 @@
+<dialog id="choiceDialog" aria-labelledby="choiceTitle">
+  <div class="dialog-head">
+    <h2 id="choiceTitle">모임 선택</h2>
+    <button data-close aria-label="닫기">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
+  </div>
+  <p class="note">새 모임을 만들거나 받은 초대로 참여하세요.</p>
+  <div id="accountChoices" class="account-choices">
+    <button id="chooseCreate">
+      <strong>새 모임 만들기</strong><span>모임 생성 후 멤버 초대</span></button
+    ><button id="chooseJoin">
+      <strong>기존 모임 참여</strong><span>초대 코드 또는 링크 입력</span>
+    </button>
+  </div>
+  <form id="groupForm" hidden>
+    <label
+      >모임 이름<input
+        id="groupName"
+        required
+        maxlength="60"
+        placeholder="예: 민혁 · 하진" /></label
+    ><button class="primary">모임 만들기</button>
+  </form>
+  <form id="inviteCodeForm" hidden>
+    <label
+      >초대 코드 또는 링크<input
+        id="inviteCodeInput"
+        required
+        maxlength="500"
+        autocomplete="off"
+        autocapitalize="none"
+        spellcheck="false"
+        placeholder="받은 코드나 링크 붙여넣기" /></label
+    ><button class="primary">모임 확인</button>
+  </form>
+  <p id="invitePreview" class="note" role="status"></p>
+  <div class="choice-actions">
+    <button id="discardInvite" hidden>다른 모임 선택</button
+    ><button class="primary" id="join" hidden disabled>이 모임에 참여</button>
+  </div>
+</dialog>

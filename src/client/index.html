@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>하슐랭 · 리뷰</title>
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <!-- include: auth/login.html -->
+    <div id="app" hidden>
+      <aside class="sidebar">
+        <a class="brand" href="/v2/">hachelin<span class="brand-ko">하슐랭</span></a
+        ><label class="group-label"
+          >모임<select id="groupSelect" aria-label="현재 모임"></select></label
+        ><button class="nav-item active" id="journalNav">리뷰</button
+        ><button class="nav-item" id="mapNav">지도</button
+        ><button class="nav-item" id="galleryNav">사진</button
+        ><button class="nav-item" id="calendarNav">일정</button
+        ><button class="nav-item" id="groupNav">모임 설정</button>
+        <div class="sidebar-bottom">
+          <button id="myName" aria-label="내 프로필"></button
+          ><button class="nav-item" id="logout">로그아웃</button>
+        </div>
+      </aside>
+      <div class="main-shell">
+        <header class="topbar">
+          <span id="groupTitle">내 모임</span>
+          <div class="topbar-actions">
+            <span class="private-copy">멤버 공개</span
+            ><button class="primary" id="compose">리뷰 추가</button>
+          </div>
+        </header>
+        <main id="main">
+          <!-- include: reviews/view.html -->
+          <!-- include: map/view.html -->
+          <!-- include: photos/view.html -->
+          <!-- include: calendar/view.html -->
+        </main>
+      </div>
+      <nav class="mobile-nav">
+        <button id="mobileJournal">리뷰</button><button id="mobileMap">지도</button
+        ><button id="mobileGallery">사진</button><button id="mobileCalendar">일정</button
+        ><button id="mobileGroups">모임</button>
+      </nav>
+    </div>
+    <!-- include: auth/profile.html -->
+    <!-- include: auth/onboarding.html -->
+    <!-- include: groups/settings.html -->
+    <!-- include: reviews/detail.html --><!-- include: map/cluster.html --><!-- include: reviews/composer.html --><!-- include: photos/viewer.html --><!-- include: places/detail.html -->
+    <!-- include: photos/upload.html -->
+    <!-- include: calendar/editor.html -->
+    <!-- include: groups/membership.html -->
+    <div id="status" role="status" aria-live="polite"></div>
+    <script src="/vendor/supabase.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

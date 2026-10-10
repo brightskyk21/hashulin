@@ -1,0 +1,25 @@
+.auth-page {
+  max-width: 440px;
+  margin: 14vh auto;
+  padding: 24px;
+}
+.auth-page .brand {
+  margin: 0 0 60px;
+}
+.auth-page h1 {
+  font-size: 30px;
+  line-height: 1.4;
+}
+.auth-page p {
+  color: #7b837c;
+  line-height: 1.8;
+  margin: 18px 0;
+}
+#kakao {
+  width: 100%;
+  background: #fee500;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-top: 20px;
+}
