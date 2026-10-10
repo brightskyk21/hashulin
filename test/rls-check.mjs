@@ -70,12 +70,13 @@ await assert.rejects(db.query('select * from public.h_preview_invite($1)',[newLi
 console.log('PASS: managed default anon grants revoked; invite rotation/revocation/preview/idempotent rejoin');
 await db.exec('reset role');
 await db.exec(`create table public.places(id uuid default gen_random_uuid(),name text);
-create table public.reviews(id uuid default gen_random_uuid(),reviewer text,score numeric,comment text);
+create table public.reviews(id uuid default gen_random_uuid(),place_id uuid,reviewer text,score numeric,comment text);
 create table public.place_photos(id uuid default gen_random_uuid());
 create table public.couple_photos(id uuid default gen_random_uuid());
 create table public.events(id uuid default gen_random_uuid());
 insert into public.places(name) values('원본 식당');
-insert into public.reviews(reviewer,score,comment) values('원본 작성자',8.7,'원문');`);
+insert into public.reviews(reviewer,score,comment) values('원본 작성자',8.7,'원문');
+update public.reviews set place_id=(select id from public.places limit 1);`);
 await db.exec(await fs.readFile(new URL('../db/migrations/004_legacy_archive.sql',import.meta.url),'utf8'));
 await db.query("insert into public.h_legacy_access values ('original',$1)",[group]);
 await actor(0);const archived=(await db.query('select public.h_legacy_archive($1) as data',[group])).rows[0].data;
@@ -264,5 +265,25 @@ await actor(2);assert.equal((await db.query('select * from public.h_visit_photo_
 await db.exec('reset role; set role anon');await assert.rejects(db.query('select * from public.h_visit_photo_covers($1::uuid[])',[[newVisit]]));
 console.log('PASS: visit photo scope, existing photo preservation, retry idempotency, server-only finalization and isolated covers');
 
+await db.exec('reset role');
+await db.exec(await fs.readFile(new URL('../db/migrations/011_reviewed_places_stay_visited.sql',import.meta.url),'utf8'));
+await actor(0);
+for(const place of [originalPlace,mapped]){
+ await assert.rejects(db.query("select public.h_set_place_status($1,'wish')",[place]),e=>e.message==='HAS_PLACE_REVIEWS');
+ assert.equal((await db.query('select status from public.h_places where id=$1',[place])).rows[0].status,'visited');
+}
+await assert.rejects(db.query("select public.h_save_map_place($1,'지도 장소','서울','','식당',37.5,127,'wish')",[group]),e=>e.message==='HAS_PLACE_REVIEWS');
+const wishPlace=(await db.query("select public.h_save_map_place($1,'아직 리뷰 없음','서울','','식당',37.5,127,'wish') as id",[group])).rows[0].id;
+await db.query("select public.h_set_place_status($1,'visited')",[wishPlace]);
+await db.query("select public.h_set_place_status($1,'wish')",[wishPlace]);
+// The generic composer route also marks a previously wished place visited.
+await db.query("select public.h_record_visit($1,'아직 리뷰 없음','서울','2026-01-01',8,'방문 완료')",[group]);
+assert.equal((await db.query('select status from public.h_places where id=$1',[wishPlace])).rows[0].status,'visited');
+await assert.rejects(db.query("select public.h_set_place_status($1,'wish')",[wishPlace]),e=>e.message==='HAS_PLACE_REVIEWS');
+await actor(2);await assert.rejects(db.query("select public.h_set_place_status($1,'wish')",[wishPlace]),e=>e.code==='42501');
+await db.exec('reset role; set role anon');await assert.rejects(db.query("select public.h_set_place_status($1,'wish')",[wishPlace]));
+await db.exec('reset role');
+assert.equal(Number((await db.query('select count(*) from public.reviews')).rows[0].count),1);
+console.log('PASS: reviewed places reject wishlist changes via status and search, legacy reviews count, unreviewed toggles work, new reviews mark visited, outsider/anon denied');
 await db.close();
 

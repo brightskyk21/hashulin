@@ -42,3 +42,7 @@ function ownLegacyReview(archive,places,user,placeId,date,name='',address=''){
  const author=archive?.authors?.find(a=>a.user_id===user&&a.accepted_at);
  return author?(archive.reviews||[]).find(r=>r.place_id===place.legacy_id&&r.visited_on===date&&r.reviewer===author.reviewer)||null:null;
 }
+
+function placeHasReviews(place,archive){
+ return Number(place?.review_count||0)>0||!!(place?.legacy_id&&(archive?.reviews||[]).some(r=>r.place_id===place.legacy_id));
+}

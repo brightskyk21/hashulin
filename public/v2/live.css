@@ -121,3 +121,11 @@ button.map-score-pin{min-height:34px;border-width:1px;padding:6px 9px;font-size:
 @media(max-width:760px){.workspace-calendar{display:flex;flex-direction:column;gap:24px}.workspace-calendar>section,.calendar-panel{width:100%}.journal-entry.live-card{padding:18px}.journal-entry .live-review p{font-size:13px}.journal-entry .place-photos{max-width:132px}.review-photo-previews>div{width:68px;height:68px}#reviewForm textarea{font-size:16px}#reviewForm input:not([type=range]):not([type=file]){font-size:16px}.review-photo-previews button{min-width:32px;min-height:32px}}
 .journal-entry .place-category{display:block;margin-top:6px}.journal-entry .place-photos{padding:0;border:0;margin:0}
 @media(max-width:760px){.journal-entry.with-photos{display:block;position:relative}.journal-entry.with-photos .place-photos{position:absolute;right:18px;top:18px;width:88px;max-width:88px}.journal-entry.with-photos .date,.journal-entry.with-photos .journal-open,.journal-entry.with-photos .place-category{max-width:calc(100% - 104px)}.journal-entry.with-photos .journal-open{min-height:24px}.journal-entry.with-photos .archive-content{padding-top:0}.journal-entry.with-photos .live-review{clear:both}}
+
+/* Mobile map prioritizes the canvas over a repeated page heading. */
+@media(max-width:760px){
+ #main:has(#mapView:not([hidden])){padding-top:12px}
+ #mapView>.workspace-heading{display:none}
+ #mapView>.workspace-toolbar{margin:10px 0 12px}
+ #mapView #realMap{height:calc(100dvh - 290px - env(safe-area-inset-bottom));min-height:280px}
+}

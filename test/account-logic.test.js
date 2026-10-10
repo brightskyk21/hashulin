@@ -39,3 +39,10 @@ test('legacy duplicate matching uses accepted account, exact place and visit dat
  assert.equal(ctx.ownLegacyReview(archive,places,'min','p','2026-10-02'),null);
  archive.authors[0].accepted_at=null;assert.equal(ctx.ownLegacyReview(archive,places,'min','p','2026-10-01'),null);
 });
+
+test('wishlist eligibility includes all new review totals and linked legacy reviews',()=>{
+ assert.equal(ctx.placeHasReviews({review_count:1},null),true);
+ assert.equal(ctx.placeHasReviews({legacy_id:'p'},{reviews:[{place_id:'p'}]}),true);
+ assert.equal(ctx.placeHasReviews({review_count:0,legacy_id:'other'},{reviews:[{place_id:'p'}]}),false);
+ assert.equal(ctx.placeHasReviews(undefined,null),false);
+});
