@@ -239,5 +239,13 @@ assert.equal(summaryCount,Number((await db.query('select count(*) from public.h_
 assert.ok(summaryCount>24);
 console.log('PASS: multi-page visits have no omissions/duplicates and map totals include all pages');
 
+await db.exec('reset role');
+await db.exec(await fs.readFile(new URL('../db/migrations/009_group_name.sql',import.meta.url),'utf8'));
+await actor(0);await db.query("select public.h_rename_group($1,'  새 모임 이름  ')",[group]);
+assert.equal((await db.query('select name from public.h_groups where id=$1',[group])).rows[0].name,'새 모임 이름');
+await assert.rejects(db.query("select public.h_rename_group($1,'  ')",[group]));
+for(const i of [1,2]){await actor(i);await assert.rejects(db.query("select public.h_rename_group($1,'위조')",[group]));}
+await db.exec('reset role;set role anon');await assert.rejects(db.query("select public.h_rename_group($1,'위조')",[group]));
+console.log('PASS: owner rename, trim, empty name rejection, member/outsider/anonymous denial');
 await db.close();
 
