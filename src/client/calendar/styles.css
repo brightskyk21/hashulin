@@ -381,9 +381,9 @@
   margin: 10px 0 15px;
 }
 .calendar-panel .month-day {
-  height: 48px;
+  height: 66px;
   gap: 4px;
-  padding: 7px;
+  padding: 7px 3px;
 }
 .calendar-panel .month-day small {
   font-size: 0;
@@ -396,6 +396,62 @@
 }
 .calendar-panel .month-day em {
   display: none;
+}
+.week-labels > span:first-child,
+.month-day.holiday > span:first-child {
+  color: #b24d49;
+}
+.month-day.outside.holiday > span:first-child {
+  color: #c99491;
+}
+.calendar-panel .month-day .day-holiday {
+  display: block;
+  width: 100%;
+  min-height: 14px;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 400;
+  color: #b24d49;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calendar-panel .month-day.outside .day-holiday {
+  opacity: 0.6;
+}
+.calendar-panel .month-day .day-event-dots {
+  display: flex;
+  gap: 3px;
+  min-height: 5px;
+}
+.holiday-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.holiday-item > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.holiday-item strong {
+  color: #a44743;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.holiday-label {
+  color: #a44743;
+  background: #fcf0ee;
+  border-radius: 4px;
+  padding: 3px 5px;
+  font-size: 10px;
+}
+.holiday-item time {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--muted);
 }
 .selected-day {
   margin-top: 20px;

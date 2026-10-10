@@ -2109,6 +2109,148 @@ function initPhotosUpload() {
 }
 
 ;
+/* Source: calendar/holiday-dates.js */
+// 대한민국 공휴일: KASI 달력 자료 + 인사혁신처 변경 공고 (2026-10-11 확인).
+// 출처·지원 범위·갱신 절차: calendar/holidays.md. 모임 일정/DB와 분리된 읽기 전용 데이터.
+const koreanHolidayDates = {
+  2025: [
+    ['01-01', '신정'],
+    ['01-27', '임시공휴일'],
+    ['01-28', '설날'],
+    ['01-29', '설날'],
+    ['01-30', '설날'],
+    ['03-01', '삼일절'],
+    ['03-03', '대체공휴일(삼일절)'],
+    ['05-05', '부처님오신날'],
+    ['05-05', '어린이날'],
+    ['05-06', '대체공휴일(부처님오신날)'],
+    ['06-03', '대통령선거일'],
+    ['06-06', '현충일'],
+    ['08-15', '광복절'],
+    ['10-03', '개천절'],
+    ['10-05', '추석'],
+    ['10-06', '추석'],
+    ['10-07', '추석'],
+    ['10-08', '대체공휴일(추석)'],
+    ['10-09', '한글날'],
+    ['12-25', '성탄절'],
+  ],
+  2026: [
+    ['01-01', '신정'],
+    ['02-16', '설날'],
+    ['02-17', '설날'],
+    ['02-18', '설날'],
+    ['03-01', '삼일절'],
+    ['03-02', '대체공휴일(삼일절)'],
+    ['05-01', '노동절'],
+    ['05-05', '어린이날'],
+    ['05-24', '부처님오신날'],
+    ['05-25', '대체공휴일(부처님오신날)'],
+    ['06-03', '전국동시지방선거'],
+    ['06-06', '현충일'],
+    ['07-17', '제헌절'],
+    ['08-15', '광복절'],
+    ['08-17', '대체공휴일(광복절)'],
+    ['09-24', '추석'],
+    ['09-25', '추석'],
+    ['09-26', '추석'],
+    ['10-03', '개천절'],
+    ['10-05', '대체공휴일(개천절)'],
+    ['10-09', '한글날'],
+    ['12-25', '성탄절'],
+  ],
+  2027: [
+    ['01-01', '신정'],
+    ['02-06', '설날'],
+    ['02-07', '설날'],
+    ['02-08', '설날'],
+    ['02-09', '대체공휴일(설날)'],
+    ['03-01', '삼일절'],
+    ['05-01', '노동절'],
+    ['05-03', '대체공휴일(노동절)'],
+    ['05-05', '어린이날'],
+    ['05-13', '부처님오신날'],
+    ['06-06', '현충일'],
+    ['07-17', '제헌절'],
+    ['07-19', '대체공휴일(제헌절)'],
+    ['08-15', '광복절'],
+    ['08-16', '대체공휴일(광복절)'],
+    ['09-14', '추석'],
+    ['09-15', '추석'],
+    ['09-16', '추석'],
+    ['10-03', '개천절'],
+    ['10-04', '대체공휴일(개천절)'],
+    ['10-09', '한글날'],
+    ['10-11', '대체공휴일(한글날)'],
+    ['12-25', '성탄절'],
+    ['12-27', '대체공휴일(성탄절)'],
+  ],
+  2028: [
+    ['01-01', '신정'],
+    ['01-26', '설날'],
+    ['01-27', '설날'],
+    ['01-28', '설날'],
+    ['03-01', '삼일절'],
+    ['04-12', '국회의원선거일'],
+    ['05-01', '노동절'],
+    ['05-02', '부처님오신날'],
+    ['05-05', '어린이날'],
+    ['06-06', '현충일'],
+    ['07-17', '제헌절'],
+    ['08-15', '광복절'],
+    ['10-02', '추석'],
+    ['10-03', '개천절'],
+    ['10-03', '추석'],
+    ['10-04', '추석'],
+    ['10-05', '대체공휴일'],
+    ['10-09', '한글날'],
+    ['12-25', '성탄절'],
+  ],
+};
+
+;
+/* Source: calendar/holidays.js */
+function holidaysAvailable(year) {
+  return Object.hasOwn(koreanHolidayDates, year);
+}
+
+function holidaysBetween(from, to) {
+  const days = new Map();
+  for (const [year, dates] of Object.entries(koreanHolidayDates)) {
+    for (const [day, name] of dates) {
+      const date = `${year}-${day}`;
+      if (date < from || date > to) continue;
+      if (!days.has(date)) days.set(date, []);
+      days.get(date).push(name);
+    }
+  }
+  return [...days]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, names]) => ({
+      holiday: true,
+      event_date: date,
+      title: names.join(' · '),
+    }));
+}
+
+function holidayItem(holiday) {
+  return `<div class="holiday-item"><div><span class="holiday-label">공휴일</span><strong>${esc(holiday.title)}</strong></div><time datetime="${holiday.event_date}">${holiday.event_date}</time></div>`;
+}
+
+function calendarAgenda(events, from, to, cancelled) {
+  if (cancelled) return events.filter((event) => event.deleted_at);
+  return [
+    ...events.filter(
+      (event) =>
+        !event.deleted_at && (event.end_date || event.event_date) >= from && event.event_date <= to,
+    ),
+    ...holidaysBetween(from, to),
+  ].sort(
+    (a, b) => a.event_date.localeCompare(b.event_date) || Number(!!b.holiday) - Number(!!a.holiday),
+  );
+}
+
+;
 /* Source: calendar/calendar.js */
 function eventsOn(date) {
   return workspace.events.filter(
@@ -2124,29 +2266,41 @@ function renderCalendar() {
   const first = dateObject(calendarMonth + '-01'),
     start = new Date(first);
   start.setDate(1 - first.getDay());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 41);
+  const holidays = new Map(
+    holidaysBetween(dateString(start), dateString(end)).map((holiday) => [
+      holiday.event_date,
+      holiday,
+    ]),
+  );
   $('#monthTitle').textContent = first.getFullYear() + '년 ' + (first.getMonth() + 1) + '월';
+  $('#holidayCoverage').hidden = holidaysAvailable(first.getFullYear());
   $('#monthGrid').innerHTML = Array.from({ length: 42 }, (_, i) => {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     const value = dateString(d),
-      items = eventsOn(value);
-    return `<button class="month-day ${value.slice(0, 7) !== calendarMonth ? 'outside' : ''} ${value === today() ? 'today' : ''} ${value === calendarDate ? 'selected' : ''}" data-day="${value}" aria-label="${value} 일정 ${items.length}개" aria-pressed="${value === calendarDate}"><span>${d.getDate()}</span>${items
+      items = eventsOn(value),
+      holiday = holidays.get(value);
+    return `<button class="month-day ${holiday || d.getDay() === 0 ? 'holiday' : ''} ${value.slice(0, 7) !== calendarMonth ? 'outside' : ''} ${value === today() ? 'today' : ''} ${value === calendarDate ? 'selected' : ''}" data-day="${value}" aria-label="${value}${holiday ? ' ' + esc(holiday.title) : ''} 일정 ${items.length}개" aria-pressed="${value === calendarDate}"><span>${d.getDate()}</span><span class="day-holiday" aria-hidden="true">${holiday ? esc(holiday.title.startsWith('대체공휴일') ? '대체공휴일' : holiday.title) : ''}</span><span class="day-event-dots" aria-hidden="true">${items
       .slice(0, 2)
       .map((e) => `<small>${esc(e.title)}</small>`)
-      .join('')}${items.length > 2 ? `<em>+${items.length - 2}</em>` : ''}</button>`;
+      .join('')}${items.length > 2 ? `<em>+${items.length - 2}</em>` : ''}</span></button>`;
   }).join('');
   $('#selectedDayTitle').textContent = calendarDate;
   const day = eventsOn(calendarDate);
-  $('#dayEvents').innerHTML = day.length
-    ? day.map((e) => eventItem(e)).join('')
-    : '<p class="note">등록된 일정이 없습니다.</p>';
-  const upcoming = cancelledEvents
-    ? workspace.events.filter((e) => e.deleted_at)
-    : workspace.events.filter((e) => !e.deleted_at && (e.end_date || e.event_date) >= today());
+  const dayHolidays = holidaysBetween(calendarDate, calendarDate);
+  $('#dayEvents').innerHTML =
+    day.length || dayHolidays.length
+      ? dayHolidays.map(holidayItem).join('') + day.map((e) => eventItem(e)).join('')
+      : '<p class="note">등록된 일정이 없습니다.</p>';
+  const future = dateObject(today());
+  future.setDate(future.getDate() + 90);
+  const upcoming = calendarAgenda(workspace.events, today(), dateString(future), cancelledEvents);
   $('#showCancelled').textContent = cancelledEvents ? '다가오는 일정' : '취소된 일정';
   $('#agendaTitle').textContent = cancelledEvents ? '취소된 일정' : '다가오는 일정';
   $('#upcomingEvents').innerHTML = upcoming.length
-    ? upcoming.map((e) => eventItem(e, cancelledEvents)).join('')
+    ? upcoming.map((e) => (e.holiday ? holidayItem(e) : eventItem(e, cancelledEvents))).join('')
     : `<p class="note">${cancelledEvents ? '취소된 일정이 없습니다.' : '예정된 일정이 없습니다.'}</p>`;
 }
 

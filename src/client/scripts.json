@@ -34,6 +34,8 @@
   "places/detail.js",
   "photos/gallery.js",
   "photos/upload.js",
+  "calendar/holiday-dates.js",
+  "calendar/holidays.js",
   "calendar/calendar.js",
   "calendar/editor.js",
   "photos/thumbnails.js",
