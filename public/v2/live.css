@@ -137,11 +137,12 @@ button.map-score-pin{min-height:34px;border-width:1px;padding:6px 9px;font-size:
 /* A compact summary for only the reviews visible on this card. */
 .journal-entry{position:relative}
 .journal-entry.with-photos{row-gap:0}
-.journal-score-footer{position:absolute;top:-12px;right:-8px;z-index:1}
+.journal-score-footer{position:absolute;top:0;right:0;z-index:1}
 .journal-score{position:relative}
-.journal-score summary{display:grid;place-items:center;list-style:none;width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:transparent;-webkit-tap-highlight-color:transparent}
+.journal-score summary{position:relative;display:grid;place-items:center;list-style:none;width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;background:transparent;-webkit-tap-highlight-color:transparent}
 .journal-score summary::-webkit-details-marker{display:none}
-.journal-score summary span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--badge-ink) 12%,white);font-size:18px;line-height:1}
-.journal-score summary:hover span{background:color-mix(in srgb,var(--badge-ink) 18%,white)}
+.journal-score-disc{position:absolute;top:-14px;right:-14px;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--badge-ink) 12%,white)}
+.journal-score-emoji{display:block;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:18px;line-height:1;transform:translateY(1px)}
+.journal-score summary:hover .journal-score-disc{background:color-mix(in srgb,var(--badge-ink) 18%,white)}
 .journal-score summary:focus-visible{outline:2px solid var(--badge-ink);outline-offset:3px}
-.journal-score-info{position:absolute;right:44px;top:8px;display:flex;align-items:center;height:28px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:#fff;white-space:nowrap;font-size:12px;color:#68726b;font-variant-numeric:tabular-nums}
+.journal-score-info{position:absolute;right:22px;top:-14px;display:flex;align-items:center;height:28px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:#fff;white-space:nowrap;font-size:12px;color:#68726b;font-variant-numeric:tabular-nums}
