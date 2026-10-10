@@ -124,6 +124,8 @@ button.map-score-pin{min-height:34px;border-width:1px;padding:6px 9px;font-size:
 
 /* Mobile map prioritizes the canvas over a repeated page heading. */
 @media(max-width:760px){
+ /* Override the shared form rule to prevent iOS focus zoom. */
+ #mapQuery{font-size:16px}
  #main:has(#mapView:not([hidden])){padding-top:12px}
  #mapView>.workspace-heading{display:none}
  #mapView>.workspace-toolbar{margin:10px 0 12px}
