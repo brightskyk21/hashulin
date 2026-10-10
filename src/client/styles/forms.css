@@ -1,0 +1,36 @@
+/* Keep this after feature styles. Small focused controls trigger iOS input zoom.
+   Coarse-pointer devices include phones in landscape and tablets, not just narrow screens.
+   The explicit priority prevents form/ID selectors from shrinking controls again.
+   Keep the viewport zoomable: never replace this with user-scalable=no. */
+@media (max-width: 760px), (any-pointer: coarse) {
+  input,
+  textarea,
+  select,
+  [contenteditable=""],
+  [contenteditable="true"],
+  [contenteditable="plaintext-only"] {
+    font-size: max(16px, 1rem) !important;
+  }
+
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .form-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-pair > label {
+    min-width: 0;
+  }
+}
+
+/* Native date fields need enough room for both the value and picker icon. */
+@media (max-width: 380px) {
+  .form-pair:has(input[type="date"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

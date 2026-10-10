@@ -10,5 +10,6 @@
   "places/styles.css",
   "reviews/styles.css",
   "reviews/badge.css",
-  "labs/styles.css"
+  "labs/styles.css",
+  "styles/forms.css"
 ]

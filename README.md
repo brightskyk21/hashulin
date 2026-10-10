@@ -54,6 +54,7 @@ test/                   기능 회귀·API·권한 검사
 | 지도 크기·검색·마커 | `src/client/map/map.js`, `clusters.js`, `styles.css`; 서버 `map/search.js` |
 | 장소 버튼·상세 | `src/client/places/detail.js`, `detail.html`, `styles.css` |
 | 갤러리·무한 스크롤·사진 | `src/client/photos/gallery.js`, `pagination.js`, `viewer.js`, `styles.css`; 서버 `photos/` |
+| 모바일 입력 시 자동 확대 | `src/client/styles/forms.css` — 모든 입력창 최소 16px, 가로 모드·태블릿 포함 |
 | 일정 | `src/client/calendar/`; 서버 `calendar/routes.js` |
 
 `src/client/scripts.json`과 `styles.json`이 묶는 순서를 정합니다. HTML은 `index.html`의

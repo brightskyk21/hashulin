@@ -551,16 +551,6 @@
   }
 }
 @media (max-width: 760px) {
-  #reviewForm textarea {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
-  #reviewForm input:not([type="range"]):not([type="file"]) {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
   .review-photo-previews button {
     min-width: 32px;
     min-height: 32px;

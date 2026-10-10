@@ -1281,13 +1281,6 @@ button:disabled {
   }
 }
 @media (max-width: 760px) {
-  input,
-  textarea,
-  select {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
   button {
     min-height: 44px;
   }
@@ -3380,11 +3373,6 @@ button.map-score-pin {
   background: #ffffff80;
 }
 @media (max-width: 760px) {
-  #mapQuery {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
   #main:has(#mapView:not([hidden])) {
     padding-top: 12px;
   }
@@ -4042,16 +4030,6 @@ button.map-score-pin {
   }
 }
 @media (max-width: 760px) {
-  #reviewForm textarea {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
-  #reviewForm input:not([type="range"]):not([type="file"]) {
-    font-size: 16px;
-  }
-}
-@media (max-width: 760px) {
   .review-photo-previews button {
     min-width: 32px;
     min-height: 32px;
@@ -4230,4 +4208,42 @@ button.map-score-pin {
   margin: 0;
   font-size: 14px;
   color: #89958d;
+}
+
+/* Source: styles/forms.css */
+/* Keep this after feature styles. Small focused controls trigger iOS input zoom.
+   Coarse-pointer devices include phones in landscape and tablets, not just narrow screens.
+   The explicit priority prevents form/ID selectors from shrinking controls again.
+   Keep the viewport zoomable: never replace this with user-scalable=no. */
+@media (max-width: 760px), (any-pointer: coarse) {
+  input,
+  textarea,
+  select,
+  [contenteditable=""],
+  [contenteditable="true"],
+  [contenteditable="plaintext-only"] {
+    font-size: max(16px, 1rem) !important;
+  }
+
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .form-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-pair > label {
+    min-width: 0;
+  }
+}
+
+/* Native date fields need enough room for both the value and picker icon. */
+@media (max-width: 380px) {
+  .form-pair:has(input[type="date"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
