@@ -247,5 +247,22 @@ await assert.rejects(db.query("select public.h_rename_group($1,'  ')",[group]));
 for(const i of [1,2]){await actor(i);await assert.rejects(db.query("select public.h_rename_group($1,'위조')",[group]));}
 await db.exec('reset role;set role anon');await assert.rejects(db.query("select public.h_rename_group($1,'위조')",[group]));
 console.log('PASS: owner rename, trim, empty name rejection, member/outsider/anonymous denial');
+await db.exec('reset role');
+await db.exec(await fs.readFile(new URL('../db/migrations/010_visit_photos.sql',import.meta.url),'utf8'));
+assert.equal(Number((await db.query('select count(*) from public.h_media where visit_id is not null')).rows[0].count),0);
+const visitPhoto='50000000-0000-0000-0000-000000000001',retryPhoto='50000000-0000-0000-0000-000000000002',uploadKey='60000000-0000-0000-0000-000000000001';
+await db.exec('set role service_role');
+assert.equal((await db.query("select public.h_finalize_visit_photo($1,$2,$3,$4,'visit photo',$5,$6) as id",[visitPhoto,group,mapped,ids[0],newVisit,uploadKey])).rows[0].id,visitPhoto);
+assert.equal((await db.query("select public.h_finalize_visit_photo($1,$2,$3,$4,'visit photo',$5,$6) as id",[retryPhoto,group,mapped,ids[0],newVisit,uploadKey])).rows[0].id,visitPhoto);
+await assert.rejects(db.query("select public.h_finalize_visit_photo(gen_random_uuid(),$1,$2,$3,'wrong visit',$4,gen_random_uuid())",[group,originalPlace,ids[0],newVisit]),e=>e.code==='22023');
+await actor(0);
+const visitCovers=(await db.query('select * from public.h_visit_photo_covers($1::uuid[])',[[newVisit]])).rows;
+assert.equal(visitCovers.length,1);assert.equal(visitCovers[0].id,visitPhoto);
+assert.equal(Number((await db.query('select count(*) from public.h_media where upload_key=$1',[uploadKey])).rows[0].count),1);
+await assert.rejects(db.query("select public.h_finalize_visit_photo(gen_random_uuid(),$1,$2,$3,'forged',$4,gen_random_uuid())",[group,mapped,ids[0],newVisit]));
+await actor(2);assert.equal((await db.query('select * from public.h_visit_photo_covers($1::uuid[])',[[newVisit]])).rows.length,0);
+await db.exec('reset role; set role anon');await assert.rejects(db.query('select * from public.h_visit_photo_covers($1::uuid[])',[[newVisit]]));
+console.log('PASS: visit photo scope, existing photo preservation, retry idempotency, server-only finalization and isolated covers');
+
 await db.close();
 

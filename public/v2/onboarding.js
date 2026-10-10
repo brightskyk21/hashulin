@@ -8,8 +8,8 @@ function accountDialog(id){
  if(!$(id).open)showDialog(id);
 }
 function openProfile(){
- $('#profileTitle').textContent=profile?'내 프로필':'이름을 설정해주세요';
- $('#profileGuide').textContent=profile?'':'함께 쓰는 사람들에게 표시할 이름이에요.';
+ $('#profileTitle').textContent=profile?'내 프로필':'프로필 설정';
+ $('#profileGuide').textContent=profile?'':'모임에서 사용할 이름을 입력해주세요.';
  $('#profileForm .primary').textContent=profile?'이름 저장':'다음';
  $('#profileDialog [data-close]').hidden=!profile;
  accountDialog('#profileDialog');
@@ -25,14 +25,14 @@ let invitePreviewVersion=0;
 async function previewPendingInvite(){
  const version=++invitePreviewVersion,token=inviteToken,actor=session?.user.id;
  $('#join').hidden=true;$('#join').disabled=true;$('#discardInvite').hidden=false;
- $('#invitePreview').textContent='초대한 모임을 확인하고 있어요…';
+ $('#invitePreview').textContent='초대 확인 중…';
  chooseAccountMode('');
  try{
   const valid=parseInvite(token);if(!valid)throw new Error('초대 코드나 링크를 확인해주세요.');
   const rows=await api('/invites/preview',{method:'POST',body:JSON.stringify({token:valid})});
   if(version!==invitePreviewVersion||inviteToken!==token||session?.user.id!==actor)return;
   const invitation=rows[0];
-  $('#invitePreview').textContent=invitation?(invitation.already_member?invitation.group_name+'에 이미 참여하고 있어요.':invitation.group_name+' 모임에 초대받았어요.'):'만료되었거나 취소된 초대예요. 새 초대를 요청해주세요.';
+  $('#invitePreview').textContent=invitation?(invitation.already_member?invitation.group_name+'에 이미 참여 중입니다.':invitation.group_name+' 모임에 초대되었습니다.'):'만료되었거나 취소된 초대입니다. 새 초대를 요청해주세요.';
   $('#join').textContent=invitation?.already_member?'이 모임 열기':'이 모임에 참여';
   $('#join').hidden=!invitation;$('#join').disabled=!invitation;
  }catch(error){if(version===invitePreviewVersion&&inviteToken===token)$('#invitePreview').textContent=error.message;}
