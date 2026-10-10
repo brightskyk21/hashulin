@@ -22,13 +22,34 @@ function journalPhotoButton(row){
  const photo=journalPhoto(row);if(!photo)return '';
  return `<aside class="place-photos"><button class="photo-thumb" ${photo.legacyPlace?`data-photo-place="${photo.legacyPlace}" data-photo-index="0"`:`data-visit-media="${photo.id}" data-visit-id="${photo.visit}"`} aria-label="${esc(row.place.name)} 사진 보기">${lazyPhoto(photo.id,row.place.name+' 사진')}</button></aside>`;
 }
+// Normalize each platform's emoji ink bounds once, rather than centering its font line box.
+const journalEmojiImages=new Map();
+function journalEmojiImage(emoji){
+ if(journalEmojiImages.has(emoji))return journalEmojiImages.get(emoji);
+ const source=document.createElement('canvas');source.width=source.height=128;
+ const ctx=source.getContext('2d',{willReadFrequently:true});
+ if(!ctx)return '';
+ ctx.font='80px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+ ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(emoji,64,96);
+ const pixels=ctx.getImageData(0,0,128,128).data;
+ let left=128,top=128,right=-1,bottom=-1;
+ for(let y=0;y<128;y++)for(let x=0;x<128;x++)if(pixels[(y*128+x)*4+3]){
+  left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
+ }
+ if(right<left)return '';
+ const icon=document.createElement('canvas');icon.width=icon.height=72;
+ const output=icon.getContext('2d');if(!output)return '';
+ const width=right-left+1,height=bottom-top+1,scale=72/Math.max(width,height);
+ output.drawImage(source,left,top,width,height,(72-width*scale)/2,(72-height*scale)/2,width*scale,height*scale);
+ const url=icon.toDataURL('image/png');journalEmojiImages.set(emoji,url);return url;
+}
 function journalScoreBadge(row){
  const scores=row.reviews.map(r=>Number(r.score)).filter(s=>Number.isFinite(s)&&s>=1&&s<=10);
  if(!scores.length)return '';
  const average=scores.reduce((sum,s)=>sum+s,0)/scores.length;
- const [emoji,mood,ink]=band(average);
+ const [emoji,mood,ink]=band(average),image=journalEmojiImage(emoji);
  const label=`${filter?'내 점수':'평균'} ${Number(average.toFixed(2))} · 리뷰 ${scores.length}개`;
- return `<div class="journal-score-footer"><details class="journal-score"><summary aria-label="${label} · ${mood}" style="--badge-ink:${ink}"><span class="journal-score-disc" aria-hidden="true"><span class="journal-score-emoji">${emoji}</span></span></summary><span class="journal-score-info">${label}</span></details></div>`;
+ return `<div class="journal-score-footer"><details class="journal-score"><summary aria-label="${label} · ${mood}" style="--badge-ink:${ink}"><span class="journal-score-disc" aria-hidden="true">${image?`<img class="journal-score-emoji" src="${image}" width="18" height="18" alt="">`:`<span class="journal-score-emoji">${emoji}</span>`}</span></summary><span class="journal-score-info">${label}</span></details></div>`;
 }
 function renderJournalFeed(){
  const rows=journalRows();visibleJournal=rows.slice(0,journalLimit);
