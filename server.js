@@ -5,8 +5,18 @@ const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-app.use(express.json());
+app.disable('x-powered-by');
+const security = require('./lib/security');
+app.use(security.headers);
+app.use(security.frontendEntry);
+app.get('/healthz', (req,res)=>res.json({ok:true}));
+app.use(express.json({limit:'32kb'}));
+app.use('/api/v2', require('./lib/accounts')());
+app.get('/vendor/supabase.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules/@supabase/supabase-js/dist/umd/supabase.js'));
+});
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api', security.legacyGate({url:process.env.SUPABASE_URL,publicKey:process.env.SUPABASE_PUBLISHABLE_KEY||process.env.SUPABASE_ANON_KEY,groupId:process.env.LEGACY_GROUP_ID}));
 
 // 사진 업로드(메모리) — 최대 8MB
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
@@ -398,5 +408,7 @@ function stripTags(s = '') {
   return s.replace(/<[^>]+>/g, '');
 }
 
+app.use((error,req,res,next)=>{if(res.headersSent)return next(error);res.status(error.type==='entity.too.large'?413:500).json({error:error.type==='entity.too.large'?'입력 내용이 너무 큽니다.':'요청을 처리하지 못했습니다.'});});
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`▶ http://localhost:${PORT}`));
+if(require.main===module){const server=app.listen(PORT,'0.0.0.0',()=>console.log(`▶ http://localhost:${PORT}`));process.on('SIGTERM',()=>{server.close(()=>process.exit(0));setTimeout(()=>process.exit(1),10000).unref();});}
+module.exports=app;
