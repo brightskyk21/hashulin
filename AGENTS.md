@@ -8,4 +8,4 @@
 - 변경 후 `npm run build`, `npm test`. UI 변경은 영향받는 화면과 모바일/PC 크기만 확인한다. 새 실패나 추가 변경이 없으면 같은 검사를 반복하지 않는다.
 - 운영 데이터로 테스트하지 않는다. DB 변경이 없다면 Supabase 전체 조회나 마이그레이션 실행은 필요 없다. 적용된 `db/migrations/001`–`011` 및 기존 리뷰·사진은 보존한다.
 - `public/legacy`, `src/server/legacy`, `db/legacy`는 이전 서비스 호환용이다. 현재 화면 수정 시 건드리지 않는다.
-- GitHub 계정은 **brightskyk21**. Render 배포 상태는 확인한 사실만 보고한다. Git push를 배포 완료로 간주하지 않는다.
+- GitHub 계정은 **brightskyk21**. 수정·검증·커밋·Git push까지만 진행한다. Render 배포는 사용자가 직접 하므로 실행하지 않는다. Git push를 배포 완료로 간주하지 않는다.

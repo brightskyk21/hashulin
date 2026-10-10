@@ -88,7 +88,7 @@ npm test
 - Build: `npm ci --include=dev && npm test && npm prune --omit=dev`
 - Start: `npm start`, health check: `/healthz`
 - 스키마: `db/migrations/001`–`011` 적용 완료. 운영 DB에 재실행하지 않습니다.
-- 배포 순서: 로컬 테스트 → 추가형 DB 마이그레이션 → Git push → Render 배포 → 운영 화면 확인.
+- 배포 순서: 로컬 테스트 → 필요한 경우 추가형 DB 마이그레이션 → Git push. Render 배포는 사용자가 직접 진행합니다.
 - 새 마이그레이션 010은 이전 앱과 호환됩니다. 앱 롤백 시 사진 연결 컬럼이나 기존 데이터를 삭제하지 않습니다.
 
 ## 데이터와 권한

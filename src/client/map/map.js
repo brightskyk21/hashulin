@@ -35,6 +35,8 @@ async function ensureMap() {
     center: new naver.maps.LatLng(37.5666, 126.9784),
     zoom: 11,
     zoomControl: false,
+    scaleControl: false,
+    mapDataControl: false,
   });
   naver.maps.Event.addListener(liveMap, 'idle', refreshMapMarkers);
   return liveMap;
