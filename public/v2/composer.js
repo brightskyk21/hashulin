@@ -27,7 +27,7 @@ function compose(visit=null){
  form.elements.placeName.readOnly=false;form.elements.address.readOnly=false;$('#composeSearchResults').replaceChildren();$('#reviewProgress').textContent='';$('#saveReview').textContent='저장';
  $('#reviewConflict').hidden=true;$('#scoreGuide').hidden=true;$('#scoreHelp').setAttribute('aria-expanded','false');$('#scoreHelp').textContent='기준 보기';
  const mine=visit?.h_reviews.find(r=>r.author_id===session.user.id);
- $('#formTitle').textContent=visit?`${visit.h_places.name} · 내 평가`:'기록 추가';$('#placeFields').hidden=!!visit;
+ $('#formTitle').textContent=visit?`${visit.h_places.name} · 내 리뷰`:'리뷰 추가';$('#placeFields').hidden=!!visit;
  form.elements.placeName.required=!visit;form.elements.date.required=!visit;form.elements.date.value=visit?.visited_on||today();form.elements.date.max=today();
  scoreChosen=!!mine;form.elements.score.value=mine?.score??5.5;form.elements.comment.value=mine?.comment||'';
  $('#places').innerHTML=workspace.places.map(p=>`<option value="${esc(p.name)}">${esc(p.road_address||p.address)}</option>`).join('');
@@ -59,18 +59,18 @@ async function submitReview(button){
    if(visit?.legacy)await api(`/legacy/reviews/${id}`,{method:'PUT',body:JSON.stringify({...payload,expectedScore:Number(visit.legacy.score),expectedComment:visit.legacy.comment})});
    else if(visit)await api(`/visits/${id}/review`,{method:'PUT',body:JSON.stringify(payload)});
    else{
-    if(ownLegacyReview(archive,workspace.places,session.user.id,form.dataset.placeId,form.elements.date.value,form.elements.placeName.value,form.elements.address.value))throw new Error('이날 남긴 평가가 있습니다. 해당 기록에서 내 평가 수정을 선택해주세요.');
+    if(ownLegacyReview(archive,workspace.places,session.user.id,form.dataset.placeId,form.elements.date.value,form.elements.placeName.value,form.elements.address.value))throw new Error('이날 남긴 리뷰가 있습니다. 해당 리뷰에서 내 리뷰 수정을 선택해주세요.');
     if(form.dataset.searchPlace&&!form.dataset.placeId){const result=await api(`/groups/${target}/places`,{method:'POST',body:JSON.stringify({...JSON.parse(form.dataset.searchPlace),status:'visited'})});form.dataset.placeId=result.id;}
     id=await api(form.dataset.placeId?`/places/${form.dataset.placeId}/visits`:`/groups/${target}/visits`,{method:'POST',body:JSON.stringify({...payload,date:form.elements.date.value,placeName:form.elements.placeName.value.trim(),address:form.elements.address.value.trim()})});
    }
    savedReview={id,group:target,legacy:!!visit?.legacy};
   }
   for(const p of reviewPhotos.filter(p=>!p.done)){
-   $('#reviewProgress').textContent=`기록 저장됨 · 사진 ${reviewPhotos.filter(p=>p.done).length+1}/${reviewPhotos.length} 올리는 중…`;
+   $('#reviewProgress').textContent=`리뷰 저장됨 · 사진 ${reviewPhotos.filter(p=>p.done).length+1}/${reviewPhotos.length} 올리는 중…`;
    const body=new FormData();body.append('photo',p.file);body.append('visitId',savedReview.id);body.append('uploadId',p.key);body.append('caption','');
    await api(`/groups/${savedReview.group}/photos`,{method:'POST',body});p.done=true;renderReviewPhotos();
   }
-  const result=savedReview;clearReviewPhotos();savedReview=null;$('#reviewDialog').close();if(groupId===result.group)await refreshJournal(result.legacy);status('기록을 저장했습니다.');
+  const result=savedReview;clearReviewPhotos();savedReview=null;$('#reviewDialog').close();if(groupId===result.group)await refreshJournal(result.legacy);status('리뷰을 저장했습니다.');
  }catch(error){
   if(error.status===409&&!savedReview)$('#reviewConflict').hidden=false;
   $('#reviewProgress').textContent=savedReview?'점수와 감상은 저장됐습니다. 남은 사진만 다시 올릴 수 있습니다.':'';

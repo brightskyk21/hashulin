@@ -7,7 +7,7 @@ async function ensureJournalPage(request=journalRequest){
   const cursor=visitNext,result=await api(`/groups/${target}/visits?author=${author}&after=${encodeURIComponent(cursor)}`);
   if(request!==journalRequest||groupId!==target||filter!==author)return;
   visits=[...new Map([...visits,...result.items].map(v=>[v.id,v])).values()];visitNext=result.next;
-  if(visitNext===cursor)throw new Error('기록을 더 불러오지 못했습니다. 다시 시도해주세요.');
+  if(visitNext===cursor)throw new Error('리뷰을 더 불러오지 못했습니다. 다시 시도해주세요.');
  }
 }
 function journalPhoto(row){
@@ -27,7 +27,7 @@ function renderJournalFeed(){
  $('#records').innerHTML=visibleJournal.length?visibleJournal.map(row=>{
   const photo=journalPhotoButton(row);
   return `<article class="live-card archive-card journal-entry ${photo?'with-photos':''}"><div class="archive-content"><div class="date">${esc(row.date||'날짜 없음')}</div><button class="journal-open" data-journal="${esc(row.key)}"><h2>${esc(row.place.name)}</h2></button>${row.place.category?`<p class="place-category">${esc(row.place.category.split('>').pop().trim())}</p>`:''}${row.reviews.map(r=>`<div class="live-review"><header><strong>${esc(journalAuthor(r))}${r.author_id===session?.user.id?' · 나':''}</strong><span class="score-pill" style="color:${band(Number(r.score))[2]}">${Number(r.score).toFixed(1)}</span></header>${reviewCopy(r,'feed')}</div>`).join('')}</div>${photo}</article>`;
- }).join(''):`<div class="empty-state"><h2>${filter?'작성한 평가가 없습니다':'방문 기록이 없습니다'}</h2><button class="primary" data-compose>기록 추가</button></div>`;
+ }).join(''):`<div class="empty-state"><h2>${filter?'작성한 리뷰가 없습니다':'리뷰이 없습니다'}</h2><button class="primary" data-compose>리뷰 추가</button></div>`;
  $('#moreVisits').hidden=rows.length<=journalLimit&&!visitNext;
  $('#archiveSection').hidden=true;scheduleReviewClamps();
  if(selectedJournal&&$('#journalDialog').open)renderJournalDetail(selectedJournal);
@@ -40,7 +40,7 @@ function renderJournalDetail(key){
  const mine=row.reviews.find(r=>r.author_id===session?.user.id)||row.visit?.h_reviews.find(r=>r.author_id===session?.user.id)||(old?{...old,legacy:true}:null);
  $('#journalDetailReviews').innerHTML=row.reviews.map(r=>`<div class="live-review"><header><strong>${esc(journalAuthor(r))}${r.author_id===session?.user.id?' · 나':''}</strong><span class="score-pill" style="color:${band(Number(r.score))[2]}">${Number(r.score).toFixed(1)}</span></header><p>${esc(r.comment||'')}</p></div>`).join('');
  $('#journalDetailPhotos').innerHTML=journalPhotoButton(row);observePhotos();
- $('#journalDetailActions').innerHTML=`${mine?`<button class="primary" ${mine.legacy?`data-legacy-review="${mine.id}"`:`data-review="${row.visit.id}"`}>내 평가 수정</button>`:row.date?`<button class="primary" data-journal-review="${esc(key)}">내 평가 추가</button>`:''}<button class="secondary-action" data-place="${row.place.id}">장소 보기</button>`;
+ $('#journalDetailActions').innerHTML=`${mine?`<button class="primary" ${mine.legacy?`data-legacy-review="${mine.id}"`:`data-review="${row.visit.id}"`}>내 리뷰 수정</button>`:row.date?`<button class="primary" data-journal-review="${esc(key)}">내 리뷰 추가</button>`:''}<button class="secondary-action" data-place="${row.place.id}">장소 보기</button>`;
 }
 function openJournal(key){renderJournalDetail(key);showDialog('#journalDialog');}
 $('#journalDialog').addEventListener('close',()=>{selectedJournal='';});
